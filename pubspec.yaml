@@ -38,7 +38,8 @@ dependencies:
   firebase_auth: ^5.5.4
   cloud_firestore: ^5.6.1
   shared_preferences: ^2.0.15
-  
+  flutter_launcher_icons: ^0.13.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -91,3 +92,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/app_icon.png"

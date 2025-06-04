@@ -6,6 +6,7 @@ import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/theme.dart';
 import 'package:lmb_skripsi/pages/auth/email_verification_page.dart';
 import 'package:lmb_skripsi/pages/auth/login_page.dart';
+import 'package:lmb_skripsi/pages/home/main_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,7 +59,7 @@ class AuthRedirectorGate extends StatelessWidget {
           return const EmailVerificationPage();
         }
 
-        return const Center(child: Text('Home Page'));
+        return MainPage();
       },
     );
   }
