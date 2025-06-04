@@ -7,6 +7,7 @@ class LmbSnackbar {
   }
 
   static void onError(BuildContext context, String message) {
+    print('[ERROR] $message');
     _showSnackbar(context, message, LmbColors.error);
   }
 

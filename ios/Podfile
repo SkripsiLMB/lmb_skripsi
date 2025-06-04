@@ -1,5 +1,5 @@
 # Set minimum platform version for iOS
-platform :ios, '12.0'
+platform :ios, '16.0'
 
 # CocoaPods analytics slows down Flutter build, disable it
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -48,6 +48,16 @@ end
 # Post-install actions to allow non-modular headers
 post_install do |installer|
   installer.pods_project.targets.each do |target|
+    if target.name == 'BoringSSL-GRPC'
+      target.source_build_phase.files.each do |file|
+        if file.settings && file.settings['COMPILER_FLAGS']
+          flags = file.settings['COMPILER_FLAGS'].split
+          flags.reject! { |flag| flag == '-GCC_WARN_INHIBIT_ALL_WARNINGS' }
+          file.settings['COMPILER_FLAGS'] = flags.join(' ')
+        end
+      end
+    end
+
     flutter_additional_ios_build_settings(target)
 
     target.build_configurations.each do |config|

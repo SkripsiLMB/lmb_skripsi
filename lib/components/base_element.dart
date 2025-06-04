@@ -33,6 +33,8 @@ class LmbBaseElement extends StatelessWidget {
       onTap: () => FocusScope.of(context).unfocus(),
 
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
+
         // NOTE: Ngecek harus pake navbar, backbutton, title atau tidak
         appBar: showNavbar
             ? AppBar(
@@ -41,10 +43,25 @@ class LmbBaseElement extends StatelessWidget {
               )
             : null,
 
-        // NOTE: Ngecek harus pake scrollable atau tidak
+        // NOTE: Ngecek harus pake scrollable atau centered scrollable
         body: isScrollable
             ? SingleChildScrollView(child: content)
-            : Center(child: content),
+            : SafeArea(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    reverse: true,
+                    padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                      child: IntrinsicHeight(
+                        child: content,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
       ),
     );
   }

@@ -1,3 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:lmb_skripsi/components/base_element.dart';
@@ -5,7 +8,10 @@ import 'package:lmb_skripsi/components/button.dart';
 import 'package:lmb_skripsi/components/checkbox.dart';
 import 'package:lmb_skripsi/components/text_button.dart';
 import 'package:lmb_skripsi/components/textfield.dart';
+import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
+import 'package:lmb_skripsi/helpers/logic/input_validator.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
+import 'package:lmb_skripsi/helpers/ui/snackbar_handler.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -19,7 +25,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final nikController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
   bool termPolicyAgreement = false;
+  bool isActionLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +35,10 @@ class _RegisterPageState extends State<RegisterPage> {
       isScrollable: false,
       showNavbar: false,
       children: [
-      // NOTE: Bagian header
+        // NOTE: Bagian header
         const Text(
           'Sign Up',
           style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: LmbColors.brand),
-          textAlign: TextAlign.center,
         ),
         const Text('Join our cooperative community now.'),
         const SizedBox(height: 48),
@@ -58,6 +65,12 @@ class _RegisterPageState extends State<RegisterPage> {
         LmbTextField(
           hint: 'Password',
           controller: passwordController,
+          isPassword: true,
+        ),
+        const SizedBox(height: 16),
+        LmbTextField(
+          hint: 'Confirm Password',
+          controller: confirmPasswordController,
           isPassword: true,
         ),
         const SizedBox(height: 16),
@@ -99,7 +112,54 @@ class _RegisterPageState extends State<RegisterPage> {
         // NOTE: Bagian tombol Register dan navigasi ke login
         LmbPrimaryButton(
           text: 'Create Account',
-          onPressed: () {},
+          isLoading: isActionLoading,
+          onPressed: () async {
+            final name = nameController.text.trim();
+            final nameError = InputValidator.empty(name, "Name", minLen: 4, maxLen: 64);
+            if (nameError != null) {
+              LmbSnackbar.onError(context, nameError);
+              return;
+            }
+
+            final nik = nikController.text.trim();
+            final nikError = InputValidator.number(nik, "NIK", minLen: 16, maxLen: 16);
+            if (nikError != null) {
+              LmbSnackbar.onError(context, nikError);
+              return;
+            }
+
+            final email = emailController.text.trim();
+            final emailError = InputValidator.email(email);
+            if (emailError != null) {
+              LmbSnackbar.onError(context, emailError);
+              return;
+            }
+
+            final password = passwordController.text;
+            final passwordError = InputValidator.password(password);
+            if (passwordError != null) {
+              LmbSnackbar.onError(context, passwordError);
+              return;
+            }
+
+            final confirmPassword = confirmPasswordController.text;
+            if (password != confirmPassword) {
+              LmbSnackbar.onError(context, 'Passwords do not match');
+              return;
+            }
+
+            if (!termPolicyAgreement) {
+              LmbSnackbar.onError(context, 'You must agree to Terms of Service and Privacy Policy');
+              return;
+            }
+            
+            setState(() => isActionLoading = true);
+            User? user = await AuthenticatorService.instance.handleRegister(context, name, nik, email, password);
+            setState(() => isActionLoading = false);
+            if (user != null) {
+              Navigator.pop(context);
+            }
+          },
         ),
         const SizedBox(height: 16),
         Row(

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lmb_skripsi/components/base_element.dart';
 import 'package:lmb_skripsi/components/button.dart';
@@ -5,7 +6,11 @@ import 'package:lmb_skripsi/components/checkbox.dart';
 import 'package:lmb_skripsi/components/text_button.dart';
 import 'package:lmb_skripsi/components/textfield.dart';
 import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
+import 'package:lmb_skripsi/helpers/logic/input_validator.dart';
+import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
+import 'package:lmb_skripsi/helpers/ui/snackbar_handler.dart';
+import 'package:lmb_skripsi/pages/auth/forgot_password_page.dart';
 import 'package:lmb_skripsi/pages/auth/register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -19,9 +24,8 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool rememberMe = false;
+  bool isActionLoading = false;
   
-  final authService = AuthenticatorService();
-
   @override
   Widget build(BuildContext context) {
     return LmbBaseElement(
@@ -32,7 +36,6 @@ class _LoginPageState extends State<LoginPage> {
         const Text(
           'Sign In',
           style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: LmbColors.brand),
-          textAlign: TextAlign.center,
         ),
         const Text('Welcome back! Please sign in to continue.'),
         const SizedBox(height: 48),
@@ -63,7 +66,10 @@ class _LoginPageState extends State<LoginPage> {
             LmbTextButton(
               text: 'Forgot Password ?',
               onTap: () {
-                
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                );
               },
             ),
           ],
@@ -73,8 +79,28 @@ class _LoginPageState extends State<LoginPage> {
         // NOTE: Bagian tombol login dan navigasi ke Register
         LmbPrimaryButton(
           text: 'Login',
-          onPressed: () {
-            authService.handleLogin(context, emailController.text, passwordController.text);
+          isLoading: isActionLoading,
+          onPressed: () async {
+              final email = emailController.text.trim();
+              final emailError = InputValidator.email(email);
+              if (emailError != null) {
+                LmbSnackbar.onError(context, emailError);
+                return;
+              }
+
+              final password = passwordController.text;
+              final passwordError = InputValidator.password(password);
+              if (passwordError != null) {
+                LmbSnackbar.onError(context, passwordError);
+                return;
+              }
+
+            setState(() => isActionLoading = true);
+            User? user = await AuthenticatorService.instance.handleLogin(context, email, password);
+            setState(() => isActionLoading = false);
+            if (user != null) {
+              await LmbLocalStorage.setValue("rememberMe", rememberMe);
+            }
           },
         ),
         const SizedBox(height: 16),
