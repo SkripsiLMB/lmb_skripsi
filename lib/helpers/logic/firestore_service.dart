@@ -1,4 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:lmb_skripsi/helpers/ui/snackbar_handler.dart';
+import 'package:lmb_skripsi/model/lmb_user.dart';
 
 class FirestoreService {
   // NOTE: Singleton system
@@ -26,7 +29,18 @@ class FirestoreService {
   }
 
   // NOTE: Ambil data user
-  Future<DocumentSnapshot> getUserByEmail(String email) {
-    return _db.collection('users').doc(email).get();
+Future<LmbUser> getUserByEmail(BuildContext context, String email) async {
+  final snapshot = await _db.collection('users').doc(email).get();
+  if (!snapshot.exists) {
+    LmbSnackbar.onError(context, "Your account has invalidity please contact admin.");
   }
+
+  final data = snapshot.data() as Map<String, dynamic>;
+  return LmbUser(
+    name: data['name'] ?? 'Unknown User',
+    nik: data['nik'] ?? '-',
+    email: email,
+    createdAt: (data['created_at'] as Timestamp?)?.toDate() ?? DateTime.now(),
+  );
+}
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lmb_skripsi/components/navigation_bar.dart';
+import 'package:lmb_skripsi/pages/main/children/home_page.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -7,10 +8,10 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    HomePage(),
+    Homepage(),
     SavingsPage(),
     LoanPage(),
     ProfilePage(),
@@ -25,19 +26,18 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: Padding(
+        padding: EdgeInsetsGeometry.only(bottom: 90),
+        child: _pages[_selectedIndex],
+      ),
+      resizeToAvoidBottomInset: true,
+      extendBody: true,
       bottomNavigationBar: LmbBottomNavBar(
         currentIndex: _selectedIndex,
         onItemSelected: _onTabSelected,
       ),
     );
   }
-}
-
-class HomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Center(child: Text('Home Page', style: TextStyle(fontSize: 24)));
 }
 
 class SavingsPage extends StatelessWidget {

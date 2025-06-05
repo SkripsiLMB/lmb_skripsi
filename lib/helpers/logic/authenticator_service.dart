@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:lmb_skripsi/helpers/logic/firestore_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/snackbar_handler.dart';
+import 'package:lmb_skripsi/model/lmb_user.dart';
 
 class AuthenticatorService {
   // NOTE: Properti singleton
@@ -25,7 +26,8 @@ class AuthenticatorService {
   Future<User?> handleLogin(BuildContext context, String email, String password) async {
     try {
       final credential = await _auth.signInWithEmailAndPassword(email: email, password: password);
-      await LmbLocalStorage.setValue("email", email);
+      final userData = await FirestoreService.instance.getUserByEmail(context, email);
+      await LmbLocalStorage.setValue("user_data", userData);
       return credential.user;
     } on FirebaseAuthException catch (e) {
       LmbSnackbar.onError(context, '[${e.code}] ${e.message}');
@@ -41,7 +43,7 @@ class AuthenticatorService {
     try {
       final credential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       await FirestoreService.instance.setUserData(email: email, name: name, nik: nik);
-      await LmbLocalStorage.setValue("email", email);
+      await LmbLocalStorage.setValue("user_data", LmbUser(name: name, nik: nik, email: email, createdAt: DateTime.now()));
       return credential.user;
     } on FirebaseAuthException catch (e) {
       LmbSnackbar.onError(context, '[${e.code}] ${e.message}');
@@ -69,7 +71,7 @@ class AuthenticatorService {
   // NOTE: untuk keluar
   Future<void> handleLogout() async {
     await _auth.signOut();
-    await LmbLocalStorage.setValue("email", null);
+    await LmbLocalStorage.setValue("user_data", null);
   }
 
   // NOTE: untuk verif email

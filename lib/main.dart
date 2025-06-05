@@ -6,7 +6,7 @@ import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/theme.dart';
 import 'package:lmb_skripsi/pages/auth/email_verification_page.dart';
 import 'package:lmb_skripsi/pages/auth/login_page.dart';
-import 'package:lmb_skripsi/pages/home/main_page.dart';
+import 'package:lmb_skripsi/pages/main/main_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,11 +55,23 @@ class AuthRedirectorGate extends StatelessWidget {
           return const LoginPage();
         }
 
-        if (!user.emailVerified) {
-          return const EmailVerificationPage();
-        }
+        return FutureBuilder(
+          future: user.reload().then((_) => FirebaseAuth.instance.currentUser),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
 
-        return MainPage();
+            final refreshedUser = snapshot.data;
+            if (refreshedUser != null && !refreshedUser.emailVerified) {
+              return const EmailVerificationPage();
+            }
+
+            return MainPage();
+          },
+        );
       },
     );
   }
