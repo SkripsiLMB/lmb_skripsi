@@ -41,9 +41,8 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
 
   Future<void> _loadEmail() async {
     final rawEmail = await LmbLocalStorage.getValue<String>("email");
-    if (rawEmail == null) return;
     setState(() {
-      filteredEmail = ValueFormatter.maskEmail(rawEmail);
+      filteredEmail = ValueFormatter.maskEmail(rawEmail ?? AuthenticatorService.instance.currentUser?.email ?? "null");
     });
   }
 
