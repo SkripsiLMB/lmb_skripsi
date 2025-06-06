@@ -23,6 +23,7 @@ class MenuList extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
         width: double.infinity,
         padding: EdgeInsetsGeometry.fromLTRB(16, isFirstItem ? 16 : 0, 16, 16),
