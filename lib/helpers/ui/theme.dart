@@ -5,8 +5,8 @@ final ThemeData lmbLightTheme = ThemeData(
   brightness: Brightness.light,
   scaffoldBackgroundColor: LmbColors.backgroundLow,
   appBarTheme: AppBarTheme(
-    backgroundColor: LmbColors.brand,
-    foregroundColor: LmbColors.backgroundLow,
+    backgroundColor: LmbColors.backgroundLow,
+    foregroundColor: LmbColors.textHigh,
     titleTextStyle: TextStyle(
       fontWeight: FontWeight.w600,
       fontSize: 16
@@ -73,7 +73,7 @@ final ThemeData lmbDarkTheme = ThemeData(
   brightness: Brightness.dark,
   scaffoldBackgroundColor: LmbColors.darkBackgroundLow,
   appBarTheme: AppBarTheme(
-    backgroundColor: LmbColors.darkBackgroundHigh,
+    backgroundColor: LmbColors.darkBackgroundLow,
     foregroundColor: LmbColors.darkTextHigh,
     titleTextStyle: TextStyle(
       fontWeight: FontWeight.w600,

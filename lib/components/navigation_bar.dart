@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 
 class LmbBottomNavBar extends StatelessWidget {
@@ -11,11 +12,18 @@ class LmbBottomNavBar extends StatelessWidget {
     required this.onItemSelected,
   });
 
-  static const List<IconData> _icons = [
-    Icons.home_outlined,
-    Icons.savings_outlined,
-    Icons.pie_chart_outline,
-    Icons.person_outline,
+  static const List<String> _iconPaths = [
+    'assets/home_outline_icon.svg',
+    'assets/wallet_outline_icon.svg',
+    'assets/loan_outline_icon.svg',
+    'assets/user_outline_icon.svg',
+  ];
+
+  static const List<String> _iconPathsActive = [
+    'assets/home_filled_icon.svg',
+    'assets/wallet_filled_icon.svg',
+    'assets/loan_filled_icon.svg',
+    'assets/user_filled_icon.svg',
   ];
 
   static const List<String> _labels = [
@@ -95,7 +103,7 @@ class LmbBottomNavBar extends StatelessWidget {
             )
           ),
 
-          // Nav items
+          // NOTE: Nav items
           Padding(
             padding: EdgeInsetsGeometry.only(top: 12),
             child: SizedBox(
@@ -110,11 +118,13 @@ class LmbBottomNavBar extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          _icons[index],
-                          color: isSelected
-                              ? LmbColors.brand
-                              : LmbColors.textLow,
+                        SvgPicture.asset(
+                          isSelected
+                            ? _iconPathsActive[index]
+                            : _iconPaths[index],
+                            fit: BoxFit.contain,
+                            width: 24,
+                            height: 24,
                         ),
                         const SizedBox(height: 4),
                         Text(

@@ -16,15 +16,11 @@ class FirestoreService {
   FirebaseFirestore get db => _db;
 
   // NOTE: Masukin data user
-  Future<void> setUserData({
-    required String email,
-    required String name,
-    required String nik,
-  }) async {
-    await _db.collection('users').doc(email).set({
-      'name': name,
-      'nik': nik,
-      'created_at': FieldValue.serverTimestamp(),
+  Future<void> setUserData({required LmbUser user}) async {
+    await _db.collection('users').doc(user.email).set({
+      'name': user.name,
+      'nik': user.nik,
+      'created_at': user.createdAt,
     });
   }
 
@@ -40,7 +36,7 @@ Future<LmbUser> getUserByEmail(BuildContext context, String email) async {
     name: data['name'] ?? 'Unknown User',
     nik: data['nik'] ?? '-',
     email: email,
-    createdAt: (data['created_at'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    createdAt: (data['created_at'] as Timestamp?)?.toDate().toLocal() ?? DateTime.now(),
   );
 }
 }

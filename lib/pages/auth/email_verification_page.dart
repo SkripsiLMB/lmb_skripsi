@@ -11,6 +11,7 @@ import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/logic/value_formatter.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/helpers/ui/snackbar_handler.dart';
+import 'package:lmb_skripsi/pages/main/main_page.dart';
 
 class EmailVerificationPage extends StatefulWidget {
   const EmailVerificationPage({super.key});
@@ -25,24 +26,29 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
 
   DateTime? cooldownEndTime;
   Timer? cooldownTimer;
+  Timer? verificationCheckTimer;
   int secondsLeft = 0;
 
   @override
   void initState() {
     super.initState();
     _loadEmail();
+    _startEmailVerificationCheck();
   }
 
   @override
   void dispose() {
     cooldownTimer?.cancel();
+    verificationCheckTimer?.cancel();
     super.dispose();
   }
 
   Future<void> _loadEmail() async {
     final rawEmail = await LmbLocalStorage.getValue<String>("email");
     setState(() {
-      filteredEmail = ValueFormatter.maskEmail(rawEmail ?? AuthenticatorService.instance.currentUser?.email ?? "null");
+      filteredEmail = ValueFormatter.maskEmail(
+        rawEmail ?? AuthenticatorService.instance.currentUser?.email ?? "null",
+      );
     });
   }
 
@@ -52,15 +58,30 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
 
     cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       final now = DateTime.now();
-      if (cooldownEndTime!.isBefore(now)) {
+      final diff = cooldownEndTime!.difference(now).inSeconds;
+
+      if (diff <= 0) {
         setState(() {
           secondsLeft = 0;
         });
         timer.cancel();
       } else {
         setState(() {
-          secondsLeft = cooldownEndTime!.difference(now).inSeconds;
+          secondsLeft = diff;
         });
+      }
+    });
+  }
+
+  void _startEmailVerificationCheck() {
+    verificationCheckTimer = Timer.periodic(const Duration(seconds: 3), (timer) async {
+      final user = AuthenticatorService.instance.currentUser;
+      await user?.reload();
+      if (user?.emailVerified ?? false) {
+        timer.cancel();
+        if (context.mounted) {
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainPage()));
+        }
       }
     });
   }
@@ -68,15 +89,16 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
   @override
   Widget build(BuildContext context) {
     final isCooldown = secondsLeft > 0;
-    String descriptionText = isCooldown ? 
-      'You need to wait ${secondsLeft ~/ 60}:${(secondsLeft % 60).toString().padLeft(2, '0')} before sending another verification link.'
-      : 'Please verify that $filteredEmail is your email to continue.';
+    final minutes = secondsLeft ~/ 60;
+    final seconds = (secondsLeft % 60).toString().padLeft(2, '0');
+    final descriptionText = isCooldown
+        ? 'You need to wait $minutes:$seconds before sending another verification link.'
+        : 'Please verify that $filteredEmail is your email to continue.';
 
     return LmbBaseElement(
       isScrollable: false,
-      title: "Verify Your Email",
+      showNavbar: false,
       children: [
-        // NOTE: Bagian header
         const Text(
           'Verify your email',
           style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: LmbColors.brand),
@@ -84,19 +106,21 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
         Text(descriptionText),
         const SizedBox(height: 48),
 
-        // NOTE: Bagian tombol login dan navigasi ke Register
         LmbPrimaryButton(
           text: 'Send Verification Link',
           isLoading: isActionLoading,
           isDisabled: isCooldown,
           onPressed: () async {
             setState(() => isActionLoading = true);
-            if (await AuthenticatorService.instance.handleEmailVerification(context)) {
+            final success = await AuthenticatorService.instance.handleEmailVerification(context);
+            if (success) {
               LmbSnackbar.onSuccess(context, 'Verification link sent to $filteredEmail');
+              startCooldown();
             }
             setState(() => isActionLoading = false);
           },
         ),
+
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -111,7 +135,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
           ],
         ),
         const SizedBox(height: 128),
-      ]
+      ],
     );
   }
 }

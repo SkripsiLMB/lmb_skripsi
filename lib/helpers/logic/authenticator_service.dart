@@ -27,13 +27,13 @@ class AuthenticatorService {
     try {
       final credential = await _auth.signInWithEmailAndPassword(email: email, password: password);
       final userData = await FirestoreService.instance.getUserByEmail(context, email);
-      await LmbLocalStorage.setValue("user_data", userData);
+      await LmbLocalStorage.setValue<LmbUser>("user_data", userData, toJson: (user) => user.toJson());
       return credential.user;
     } on FirebaseAuthException catch (e) {
-      LmbSnackbar.onError(context, '[${e.code}] ${e.message}');
+      LmbSnackbar.onError(context, '[${e.code}] ${e.message}', e);
       return null;
     } catch (e) {
-      LmbSnackbar.onError(context, 'An unknown error occurred');
+      LmbSnackbar.onError(context, 'An unknown error occurred', e);
       return null;
     }
   }
@@ -42,14 +42,15 @@ class AuthenticatorService {
   Future<User?> handleRegister(BuildContext context, String name, String nik, String email, String password) async {
     try {
       final credential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-      await FirestoreService.instance.setUserData(email: email, name: name, nik: nik);
-      await LmbLocalStorage.setValue("user_data", LmbUser(name: name, nik: nik, email: email, createdAt: DateTime.now()));
+      final userData = LmbUser(name: name, nik: nik, email: email, createdAt: DateTime.now());
+      await FirestoreService.instance.setUserData(user: userData);
+      await LmbLocalStorage.setValue<LmbUser>("user_data", userData, toJson: (user) => user.toJson());
       return credential.user;
     } on FirebaseAuthException catch (e) {
-      LmbSnackbar.onError(context, '[${e.code}] ${e.message}');
+      LmbSnackbar.onError(context, '[${e.code}] ${e.message}', e);
       return null;
     } catch (e) {
-      LmbSnackbar.onError(context, 'An unknown error occurred');
+      LmbSnackbar.onError(context, 'An unknown error occurred', e);
       return null;
     }
   }
@@ -60,10 +61,10 @@ class AuthenticatorService {
       await _auth.sendPasswordResetEmail(email: email);
       return true;
     } on FirebaseAuthException catch (e) {
-      LmbSnackbar.onError(context, '[${e.code}] ${e.message}');
+      LmbSnackbar.onError(context, '[${e.code}] ${e.message}', e);
       return false;
     } catch (e) {
-      LmbSnackbar.onError(context, 'An unknown error occurred');
+      LmbSnackbar.onError(context, 'An unknown error occurred', e);
       return false;
     }
   }
@@ -71,7 +72,8 @@ class AuthenticatorService {
   // NOTE: untuk keluar
   Future<void> handleLogout() async {
     await _auth.signOut();
-    await LmbLocalStorage.setValue("user_data", null);
+    await LmbLocalStorage.deleteValue("user_data");
+    await LmbLocalStorage.setValue<bool>("remember_me", false);
   }
 
   // NOTE: untuk verif email
@@ -82,13 +84,13 @@ class AuthenticatorService {
     final now = DateTime.now();
     final today = now.toIso8601String().split('T').first;
 
-    final storedDate = await LmbLocalStorage.getValue<String>(dateKey);
+    final storedDate = await LmbLocalStorage.getValue<String>(dateKey) ?? today;
     int count = await LmbLocalStorage.getValue<int>(countKey) ?? 0;
 
     if (storedDate != today) {
       count = 0;
-      await LmbLocalStorage.setValue(dateKey, today);
-      await LmbLocalStorage.setValue(countKey, count);
+      await LmbLocalStorage.setValue<String>(dateKey, today);
+      await LmbLocalStorage.setValue<int>(countKey, count);
     }
 
     if (count >= 3) {
@@ -98,13 +100,13 @@ class AuthenticatorService {
 
     try {
       await currentUser?.sendEmailVerification();
-      await LmbLocalStorage.setValue(countKey, count + 1);
+      await LmbLocalStorage.setValue<int>(countKey, count + 1);
       return true;
     } on FirebaseAuthException catch (e) {
-      LmbSnackbar.onError(context, '[${e.code}] ${e.message}');
+      LmbSnackbar.onError(context, '[${e.code}] ${e.message}', e);
       return false;
     } catch (e) {
-      LmbSnackbar.onError(context, 'An unknown error occurred');
+      LmbSnackbar.onError(context, 'An unknown error occurred', e);
       return false;
     }
   }

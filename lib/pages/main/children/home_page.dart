@@ -22,7 +22,7 @@ class _HomepageState extends State<Homepage> {
   }
 
   Future<void> loadUserData() async {
-    final data = await LmbLocalStorage.getValue("user_data");
+    final data = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
     setState(() {
       userData = data as LmbUser;
     });
@@ -191,7 +191,7 @@ class _HomepageState extends State<Homepage> {
                                   
                                   // NOTE: Member Since
                                   Text(
-                                    'Member since: ${DateFormat('dd / MM / yyyy').format(userData?.createdAt ?? DateTime.now())}',
+                                    'Member since: ${DateFormat('dd/MM/yyyy').format(userData?.createdAt ?? DateTime.now())}',
                                     style: Theme.of(context).textTheme.labelSmall,
                                   ),
                                 ],

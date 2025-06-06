@@ -99,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
             User? user = await AuthenticatorService.instance.handleLogin(context, email, password);
             setState(() => isActionLoading = false);
             if (user != null) {
-              await LmbLocalStorage.setValue("rememberMe", rememberMe);
+              await LmbLocalStorage.setValue<bool>("remember_me", rememberMe);
             }
           },
         ),

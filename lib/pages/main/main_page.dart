@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lmb_skripsi/components/button.dart';
 import 'package:lmb_skripsi/components/navigation_bar.dart';
+import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
 import 'package:lmb_skripsi/pages/main/children/home_page.dart';
 
 class MainPage extends StatefulWidget {
@@ -55,5 +57,24 @@ class LoanPage extends StatelessWidget {
 class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
-      Center(child: Text('Profile Page', style: TextStyle(fontSize: 24)));
+    SafeArea(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text('Profile Page', style: TextStyle(fontSize: 24)),
+            SizedBox(height: 16),
+            LmbPrimaryButton(
+              text: "Logout Now", 
+              smallSize: true,
+              onPressed: () {
+                AuthenticatorService.instance.handleLogout();
+                
+              }
+            )
+          ],
+        ),
+      )
+    );
 }

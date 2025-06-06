@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 
@@ -6,8 +7,10 @@ class LmbSnackbar {
     _showSnackbar(context, message, LmbColors.success);
   }
 
-  static void onError(BuildContext context, String message) {
-    print('[ERROR] $message');
+  static void onError(BuildContext context, String message, [Object? error]) {
+    if (kDebugMode) {
+      print('[ERROR] $message | ${error ?? "NULL"}');
+    }
     _showSnackbar(context, message, LmbColors.error);
   }
 

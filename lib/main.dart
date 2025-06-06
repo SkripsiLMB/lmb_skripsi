@@ -13,7 +13,7 @@ void main() async {
   await Firebase.initializeApp();
   runApp(const MyApp());
 
-  if (await LmbLocalStorage.getValue("rememberMe")) {
+  if (await LmbLocalStorage.getValue<bool>("remember_me") ?? false) {
     await AuthenticatorService.instance.handleLogout();
   }
 }

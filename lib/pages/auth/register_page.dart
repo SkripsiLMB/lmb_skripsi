@@ -12,6 +12,7 @@ import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
 import 'package:lmb_skripsi/helpers/logic/input_validator.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/helpers/ui/snackbar_handler.dart';
+import 'package:lmb_skripsi/pages/auth/children/legal_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -90,7 +91,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     color: LmbColors.brand,
                   ),
                   recognizer: TapGestureRecognizer()..onTap = () {
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LegalPage()),
+                    );
                   },
                 ),
                 const TextSpan(text: ' and '),
@@ -100,7 +104,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     color: LmbColors.brand,
                   ),
                   recognizer: TapGestureRecognizer()..onTap = () {
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LegalPage()),
+                    );
                   },
                 ),
               ],
