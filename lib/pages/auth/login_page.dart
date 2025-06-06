@@ -4,12 +4,12 @@ import 'package:lmb_skripsi/components/base_element.dart';
 import 'package:lmb_skripsi/components/button.dart';
 import 'package:lmb_skripsi/components/checkbox.dart';
 import 'package:lmb_skripsi/components/text_button.dart';
-import 'package:lmb_skripsi/components/textfield.dart';
+import 'package:lmb_skripsi/components/text_field.dart';
 import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
 import 'package:lmb_skripsi/helpers/logic/input_validator.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
-import 'package:lmb_skripsi/helpers/ui/snackbar_handler.dart';
+import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/pages/auth/forgot_password_page.dart';
 import 'package:lmb_skripsi/pages/auth/register_page.dart';
 
@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return LmbBaseElement(
       isScrollable: false,
-      showNavbar: false,
+      showAppbar: false,
       children: [
         // NOTE: Bagian header
         const Text(
@@ -80,18 +80,19 @@ class _LoginPageState extends State<LoginPage> {
         LmbPrimaryButton(
           text: 'Login',
           isLoading: isActionLoading,
+          isFullWidth: true,
           onPressed: () async {
               final email = emailController.text.trim();
               final emailError = InputValidator.email(email);
               if (emailError != null) {
-                LmbSnackbar.onError(context, emailError);
+                WindowProvider.toastError(context, emailError);
                 return;
               }
 
               final password = passwordController.text;
               final passwordError = InputValidator.password(password);
               if (passwordError != null) {
-                LmbSnackbar.onError(context, passwordError);
+                WindowProvider.toastError(context, passwordError);
                 return;
               }
 

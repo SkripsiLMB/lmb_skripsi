@@ -3,11 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:lmb_skripsi/components/base_element.dart';
 import 'package:lmb_skripsi/components/button.dart';
-import 'package:lmb_skripsi/components/textfield.dart';
+import 'package:lmb_skripsi/components/text_field.dart';
 import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
 import 'package:lmb_skripsi/helpers/logic/input_validator.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
-import 'package:lmb_skripsi/helpers/ui/snackbar_handler.dart';
+import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -46,17 +46,18 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         LmbPrimaryButton(
           text: 'Send Email',
           isLoading: isActionLoading,
+          isFullWidth: true,
           onPressed: () async {
             final email = emailController.text.trim();
             final emailError = InputValidator.email(email);
             if (emailError != null) {
-              LmbSnackbar.onError(context, emailError);
+              WindowProvider.toastError(context, emailError);
               return;
             }
 
             setState(() => isActionLoading = true);
             if (await AuthenticatorService.instance.handleForgotPassword(context, email)) {
-              LmbSnackbar.onSuccess(context, 'Email sent to $email');
+              WindowProvider.toastSuccess(context, 'Email sent to $email');
               Navigator.pop(context);
             }
             setState(() => isActionLoading = false);

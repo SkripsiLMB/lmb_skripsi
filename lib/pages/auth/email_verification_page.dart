@@ -10,7 +10,7 @@ import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/logic/value_formatter.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
-import 'package:lmb_skripsi/helpers/ui/snackbar_handler.dart';
+import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/pages/main/main_page.dart';
 
 class EmailVerificationPage extends StatefulWidget {
@@ -97,7 +97,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
 
     return LmbBaseElement(
       isScrollable: false,
-      showNavbar: false,
+      showAppbar: false,
       children: [
         const Text(
           'Verify your email',
@@ -109,12 +109,13 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
         LmbPrimaryButton(
           text: 'Send Verification Link',
           isLoading: isActionLoading,
+          isFullWidth: true,
           isDisabled: isCooldown,
           onPressed: () async {
             setState(() => isActionLoading = true);
             final success = await AuthenticatorService.instance.handleEmailVerification(context);
             if (success) {
-              LmbSnackbar.onSuccess(context, 'Verification link sent to $filteredEmail');
+              WindowProvider.toastSuccess(context, 'Verification link sent to $filteredEmail');
               startCooldown();
             }
             setState(() => isActionLoading = false);

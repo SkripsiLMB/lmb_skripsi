@@ -3,24 +3,30 @@ import 'package:flutter/material.dart';
 class LmbBaseElement extends StatelessWidget {
   final List<Widget> children;
   final bool isScrollable;
-  final bool showNavbar;
+  final bool showAppbar;
+  final bool useNavbarSafeArea;
   final String? title;
   final bool showBackButton;
+  final bool useLargeAppBar;
 
   const LmbBaseElement({
     super.key,
     required this.children,
     this.isScrollable = true,
-    this.showNavbar = true,
+    this.showAppbar = true,
+    this.useNavbarSafeArea = false,
     this.title,
     this.showBackButton = true,
+    this.useLargeAppBar = false
   });
 
   @override
   Widget build(BuildContext context) {
     // NOTE: Template tiap page
     final content = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: useNavbarSafeArea 
+                ? EdgeInsets.symmetric(horizontal: 16, vertical: 12)
+                : EdgeInsets.fromLTRB(16, 12, 16, 112),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,10 +42,16 @@ class LmbBaseElement extends StatelessWidget {
         resizeToAvoidBottomInset: true,
 
         // NOTE: Ngecek harus pake navbar, backbutton, title atau tidak
-        appBar: showNavbar
+        appBar: showAppbar
             ? AppBar(
                 automaticallyImplyLeading: showBackButton,
-                title: title != null ? Text(title!) : null,
+                title: title != null ? Text(
+                  title!,
+                  style: TextStyle(
+                    fontSize: useLargeAppBar ? 32 : 20,
+                    fontWeight: useLargeAppBar ? FontWeight.bold : FontWeight.w500,
+                  ),
+                ) : null,
               )
             : null,
 

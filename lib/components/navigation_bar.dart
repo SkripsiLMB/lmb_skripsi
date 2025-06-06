@@ -39,9 +39,8 @@ class LmbBottomNavBar extends StatelessWidget {
     final itemWidth = screenWidth / 4;
     final offset = itemWidth * currentIndex;
 
-    return Container(
+    return SizedBox(
       height: 100,
-      padding: const EdgeInsets.only(bottom: 6),
       child: Stack(
         children: [
           Padding(

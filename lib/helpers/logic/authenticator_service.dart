@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lmb_skripsi/helpers/logic/firestore_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
-import 'package:lmb_skripsi/helpers/ui/snackbar_handler.dart';
+import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
 
 class AuthenticatorService {
@@ -30,10 +30,10 @@ class AuthenticatorService {
       await LmbLocalStorage.setValue<LmbUser>("user_data", userData, toJson: (user) => user.toJson());
       return credential.user;
     } on FirebaseAuthException catch (e) {
-      LmbSnackbar.onError(context, '[${e.code}] ${e.message}', e);
+      WindowProvider.toastError(context, '[${e.code}] ${e.message}', e);
       return null;
     } catch (e) {
-      LmbSnackbar.onError(context, 'An unknown error occurred', e);
+      WindowProvider.toastError(context, 'An unknown error occurred', e);
       return null;
     }
   }
@@ -47,10 +47,10 @@ class AuthenticatorService {
       await LmbLocalStorage.setValue<LmbUser>("user_data", userData, toJson: (user) => user.toJson());
       return credential.user;
     } on FirebaseAuthException catch (e) {
-      LmbSnackbar.onError(context, '[${e.code}] ${e.message}', e);
+      WindowProvider.toastError(context, '[${e.code}] ${e.message}', e);
       return null;
     } catch (e) {
-      LmbSnackbar.onError(context, 'An unknown error occurred', e);
+      WindowProvider.toastError(context, 'An unknown error occurred', e);
       return null;
     }
   }
@@ -61,10 +61,10 @@ class AuthenticatorService {
       await _auth.sendPasswordResetEmail(email: email);
       return true;
     } on FirebaseAuthException catch (e) {
-      LmbSnackbar.onError(context, '[${e.code}] ${e.message}', e);
+      WindowProvider.toastError(context, '[${e.code}] ${e.message}', e);
       return false;
     } catch (e) {
-      LmbSnackbar.onError(context, 'An unknown error occurred', e);
+      WindowProvider.toastError(context, 'An unknown error occurred', e);
       return false;
     }
   }
@@ -72,8 +72,7 @@ class AuthenticatorService {
   // NOTE: untuk keluar
   Future<void> handleLogout() async {
     await _auth.signOut();
-    await LmbLocalStorage.deleteValue("user_data");
-    await LmbLocalStorage.setValue<bool>("remember_me", false);
+    await LmbLocalStorage.clearAllValue();
   }
 
   // NOTE: untuk verif email
@@ -94,7 +93,7 @@ class AuthenticatorService {
     }
 
     if (count >= 3) {
-      LmbSnackbar.onError(context, 'Daily limit of 3 verification emails reached.');
+      WindowProvider.toastError(context, 'Daily limit of 3 verification emails reached.');
       return false;
     }
 
@@ -103,10 +102,10 @@ class AuthenticatorService {
       await LmbLocalStorage.setValue<int>(countKey, count + 1);
       return true;
     } on FirebaseAuthException catch (e) {
-      LmbSnackbar.onError(context, '[${e.code}] ${e.message}', e);
+      WindowProvider.toastError(context, '[${e.code}] ${e.message}', e);
       return false;
     } catch (e) {
-      LmbSnackbar.onError(context, 'An unknown error occurred', e);
+      WindowProvider.toastError(context, 'An unknown error occurred', e);
       return false;
     }
   }

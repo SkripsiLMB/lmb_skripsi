@@ -9,7 +9,8 @@ final ThemeData lmbLightTheme = ThemeData(
     foregroundColor: LmbColors.textHigh,
     titleTextStyle: TextStyle(
       fontWeight: FontWeight.w600,
-      fontSize: 16
+      fontSize: 16,
+      color: LmbColors.textHigh,
     ),
     centerTitle: false
   ),
@@ -29,6 +30,7 @@ final ThemeData lmbLightTheme = ThemeData(
   textTheme: const TextTheme(
     bodyLarge: TextStyle(color: LmbColors.textHigh),
     bodyMedium: TextStyle(color: LmbColors.textLow),
+    bodySmall: TextStyle(color: LmbColors.textLow),
     labelSmall: TextStyle(color: LmbColors.textMid, fontSize: 12),
     labelMedium: TextStyle(color: LmbColors.textMid, fontWeight: FontWeight.w600, fontSize: 18),
     labelLarge: TextStyle(color: LmbColors.textMid, fontWeight: FontWeight.bold, fontSize: 18),
@@ -77,7 +79,8 @@ final ThemeData lmbDarkTheme = ThemeData(
     foregroundColor: LmbColors.darkTextHigh,
     titleTextStyle: TextStyle(
       fontWeight: FontWeight.w600,
-      fontSize: 16
+      fontSize: 16, 
+      color: LmbColors.darkTextHigh,
     ),
     centerTitle: false
   ),
@@ -97,6 +100,7 @@ final ThemeData lmbDarkTheme = ThemeData(
   textTheme: const TextTheme(
     bodyLarge: TextStyle(color: LmbColors.darkTextHigh),
     bodyMedium: TextStyle(color: LmbColors.darkTextLow),
+    bodySmall: TextStyle(color: LmbColors.darkTextLow),
     labelSmall: TextStyle(color: LmbColors.darkTextMid, fontSize: 12),
     labelMedium: TextStyle(color: LmbColors.darkTextMid, fontWeight: FontWeight.w600, fontSize: 18),
     labelLarge: TextStyle(color: LmbColors.darkTextMid, fontWeight: FontWeight.bold, fontSize: 18),

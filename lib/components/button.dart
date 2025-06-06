@@ -4,7 +4,8 @@ import 'package:lmb_skripsi/helpers/ui/color.dart';
 class LmbPrimaryButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
-  final bool smallSize;
+  final bool isSmallSize;
+  final bool isFullWidth;
   final bool isLoading;
   final bool isDisabled;
 
@@ -12,7 +13,8 @@ class LmbPrimaryButton extends StatelessWidget {
     super.key,
     required this.text,
     required this.onPressed,
-    this.smallSize = false,
+    this.isSmallSize = false,
+    this.isFullWidth = false,
     this.isLoading = false,
     this.isDisabled = false
   });
@@ -26,12 +28,12 @@ class LmbPrimaryButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: inactive ? Colors.grey.shade600 : LmbColors.brand,
         foregroundColor: Colors.white,
-        minimumSize: smallSize ? const Size(120, 40) : const Size(double.infinity, 56),
+        minimumSize: Size(isFullWidth ? double.infinity : 60, isSmallSize ? 40 : 56),
       ),
       child: isLoading
         ? SizedBox(
-            width: smallSize ? 16 : 20,
-            height: smallSize ? 16 : 20,
+            width: isSmallSize ? 16 : 20,
+            height: isSmallSize ? 16 : 20,
             child: const CircularProgressIndicator(
               strokeWidth: 2,
               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -41,7 +43,7 @@ class LmbPrimaryButton extends StatelessWidget {
             text,
             style: TextStyle(
               fontWeight: FontWeight.w600,
-              fontSize: smallSize ? 12 : 16,
+              fontSize: isSmallSize ? 12 : 16,
             ),
           ),
     );

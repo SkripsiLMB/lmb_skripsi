@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:lmb_skripsi/helpers/ui/snackbar_handler.dart';
+import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
 
 class FirestoreService {
@@ -28,7 +28,7 @@ class FirestoreService {
 Future<LmbUser> getUserByEmail(BuildContext context, String email) async {
   final snapshot = await _db.collection('users').doc(email).get();
   if (!snapshot.exists) {
-    LmbSnackbar.onError(context, "Your account has invalidity please contact admin.");
+    WindowProvider.toastError(context, "Your account has invalidity please contact admin.");
   }
 
   final data = snapshot.data() as Map<String, dynamic>;

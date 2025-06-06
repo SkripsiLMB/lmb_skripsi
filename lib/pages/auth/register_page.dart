@@ -7,11 +7,11 @@ import 'package:lmb_skripsi/components/base_element.dart';
 import 'package:lmb_skripsi/components/button.dart';
 import 'package:lmb_skripsi/components/checkbox.dart';
 import 'package:lmb_skripsi/components/text_button.dart';
-import 'package:lmb_skripsi/components/textfield.dart';
+import 'package:lmb_skripsi/components/text_field.dart';
 import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
 import 'package:lmb_skripsi/helpers/logic/input_validator.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
-import 'package:lmb_skripsi/helpers/ui/snackbar_handler.dart';
+import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/pages/auth/children/legal_page.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -34,7 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return LmbBaseElement(
       isScrollable: false,
-      showNavbar: false,
+      showAppbar: false,
       children: [
         // NOTE: Bagian header
         const Text(
@@ -120,43 +120,44 @@ class _RegisterPageState extends State<RegisterPage> {
         LmbPrimaryButton(
           text: 'Create Account',
           isLoading: isActionLoading,
+          isFullWidth: true,
           onPressed: () async {
             final name = nameController.text.trim();
             final nameError = InputValidator.empty(name, "Name", minLen: 4, maxLen: 64);
             if (nameError != null) {
-              LmbSnackbar.onError(context, nameError);
+              WindowProvider.toastError(context, nameError);
               return;
             }
 
             final nik = nikController.text.trim();
             final nikError = InputValidator.number(nik, "NIK", minLen: 16, maxLen: 16);
             if (nikError != null) {
-              LmbSnackbar.onError(context, nikError);
+              WindowProvider.toastError(context, nikError);
               return;
             }
 
             final email = emailController.text.trim();
             final emailError = InputValidator.email(email);
             if (emailError != null) {
-              LmbSnackbar.onError(context, emailError);
+              WindowProvider.toastError(context, emailError);
               return;
             }
 
             final password = passwordController.text;
             final passwordError = InputValidator.password(password);
             if (passwordError != null) {
-              LmbSnackbar.onError(context, passwordError);
+              WindowProvider.toastError(context, passwordError);
               return;
             }
 
             final confirmPassword = confirmPasswordController.text;
             if (password != confirmPassword) {
-              LmbSnackbar.onError(context, 'Passwords do not match');
+              WindowProvider.toastError(context, 'Passwords do not match');
               return;
             }
 
             if (!termPolicyAgreement) {
-              LmbSnackbar.onError(context, 'You must agree to Terms of Service and Privacy Policy');
+              WindowProvider.toastError(context, 'You must agree to Terms of Service and Privacy Policy');
               return;
             }
             
