@@ -6,6 +6,7 @@ import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
+import 'package:lmb_skripsi/pages/main/children/profile/children/account_settings_page.dart';
 import 'package:lmb_skripsi/pages/main/children/profile/children/dark_mode_settings_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -125,13 +126,17 @@ class _ProfilePageState extends State<ProfilePage> {
                                   description: "Make changes to your account",
                                   isFirstItem: true,
                                   onTap: () {
-                                    
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const AccountSettingsPage()),
+                                    );
                                   },
                                 ),
                                 MenuList(
                                   icon: Icons.logout_rounded,
                                   title: "Sign Out",
                                   description: "Sign out from your account",
+                                  color: LmbColors.error,
                                   onTap: () {
                                     WindowProvider.showDialogBox(
                                       context: context, 
@@ -141,7 +146,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                       onPrimary: () {
                                         AuthenticatorService.instance.handleLogout();
                                       }, 
-                                      secondaryText: "Cancel"
+                                      secondaryText: "Cancel",
+                                      customColor: LmbColors.error
                                     );
                                   },
                                 )

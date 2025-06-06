@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:lmb_skripsi/helpers/ui/color.dart';
 
 class LmbTextButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
+  final Color color;
 
-  const LmbTextButton({super.key, required this.text, required this.onTap});
+  const LmbTextButton({
+    super.key, 
+    required this.text, 
+    required this.onTap,
+    this.color = LmbColors.brand
+    });
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +21,7 @@ class LmbTextButton extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(
-          color: Theme.of(context).colorScheme.primary,
+          color: color,
           fontWeight: FontWeight.w500,
         ),
       ),

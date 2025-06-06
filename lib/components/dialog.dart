@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lmb_skripsi/components/button.dart';
 import 'package:lmb_skripsi/components/text_button.dart';
+import 'package:lmb_skripsi/helpers/ui/color.dart';
 
 class LmbDialog extends StatelessWidget {
   final String title;
@@ -9,6 +10,7 @@ class LmbDialog extends StatelessWidget {
   final VoidCallback onPrimary;
   final String? secondaryText;
   final VoidCallback? onSecondary;
+  final Color color;
 
   const LmbDialog({
     super.key,
@@ -18,6 +20,7 @@ class LmbDialog extends StatelessWidget {
     required this.onPrimary,
     this.secondaryText,
     this.onSecondary,
+    this.color = LmbColors.brand
   });
 
   @override
@@ -26,7 +29,7 @@ class LmbDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       title: Text(
         title,
-        style: Theme.of(context).textTheme.titleMedium,
+        style: Theme.of(context).textTheme.bodyLarge,
       ),
       content: Text(
         description,
@@ -44,6 +47,7 @@ class LmbDialog extends StatelessWidget {
                 child: Center(
                   child: LmbTextButton(
                     text: secondaryText!,
+                    color: color,
                     onTap: () {
                       Navigator.of(context).pop();
                       if (onSecondary != null) {
@@ -60,6 +64,7 @@ class LmbDialog extends StatelessWidget {
                 text: primaryText,
                 isSmallSize: true,
                 isFullWidth: true,
+                color: color,
                 onPressed: () {
                   Navigator.of(context).pop();
                   onPrimary();

@@ -39,6 +39,7 @@ class WindowProvider {
     required VoidCallback onPrimary,
     String? secondaryText,
     VoidCallback? onSecondary,
+    Color? customColor,
   }) {
     showDialog(
       context: context,
@@ -50,6 +51,7 @@ class WindowProvider {
           onPrimary: onPrimary,
           secondaryText: secondaryText,
           onSecondary: onSecondary,
+          color: customColor ?? LmbColors.brand,
         );
       },
     );

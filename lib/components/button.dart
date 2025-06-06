@@ -8,6 +8,7 @@ class LmbPrimaryButton extends StatelessWidget {
   final bool isFullWidth;
   final bool isLoading;
   final bool isDisabled;
+  final Color color;
 
   const LmbPrimaryButton({
     super.key,
@@ -16,7 +17,8 @@ class LmbPrimaryButton extends StatelessWidget {
     this.isSmallSize = false,
     this.isFullWidth = false,
     this.isLoading = false,
-    this.isDisabled = false
+    this.isDisabled = false,
+    this.color = LmbColors.brand
   });
 
   @override
@@ -26,7 +28,7 @@ class LmbPrimaryButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: (isLoading || isDisabled) ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: inactive ? Colors.grey.shade600 : LmbColors.brand,
+        backgroundColor: inactive ? Colors.grey.shade600 : color,
         foregroundColor: Colors.white,
         minimumSize: Size(isFullWidth ? double.infinity : 60, isSmallSize ? 40 : 56),
       ),

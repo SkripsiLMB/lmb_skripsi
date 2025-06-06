@@ -8,6 +8,7 @@ class MenuList extends StatelessWidget {
   String description;
   VoidCallback onTap;
   bool isFirstItem;
+  Color color;
 
   MenuList({
     super.key,
@@ -16,7 +17,8 @@ class MenuList extends StatelessWidget {
     required this.description,
     required this.onTap,
     this.trailingItem,
-    this.isFirstItem = false
+    this.isFirstItem = false,
+    this.color = LmbColors.brand
   });
 
   @override
@@ -45,7 +47,7 @@ class MenuList extends StatelessWidget {
                     child: Center(
                       child: Icon(
                         icon,
-                        color: LmbColors.brand,
+                        color: color,
                         size: 24,
                       ),
                     ),
@@ -58,7 +60,9 @@ class MenuList extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: Theme.of(context).textTheme.bodyLarge
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: color == LmbColors.brand ? null : color,
+                      ),
                     ),
                     Text(
                       description,
