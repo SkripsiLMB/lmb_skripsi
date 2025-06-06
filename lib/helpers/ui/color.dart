@@ -7,7 +7,7 @@ class LmbColors {
 
   // Light mode colors
   static const backgroundLow = Color(0xFFFFFFFF);
-  static const backgroundHigh = Color(0xFFEDF6FF);
+  static const backgroundHigh = Color(0xFFF3F9FF);
   static const textHigh = Color(0xFF212121);
   static const textMid = Color(0xFF32366F);
   static const textLow = Color(0xFF7C8BA0);
