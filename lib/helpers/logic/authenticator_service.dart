@@ -52,11 +52,11 @@ class AuthenticatorService {
     fromJson: (json) => LmbUser.fromJson(json),
   );
 
-  final userEmail = localUserData?.email;
+  final userNik = localUserData?.nik;
 
-  if (userEmail != null) {
+  if (userNik != null) {
     try {
-      final firestoreUser = await FirestoreService.instance.getUserByEmail(context, userEmail);
+      final firestoreUser = await FirestoreService.instance.getUserByNik(context, userNik);
       setUserData(firestoreUser);
     } catch (e) {
       userData = localUserData;
@@ -75,7 +75,11 @@ class AuthenticatorService {
     try {
       final credential = await _auth.signInWithEmailAndPassword(email: email, password: password);
       final userData = await FirestoreService.instance.getUserByEmail(context, email);
-      setUserData(userData);
+      if (userData == null) {
+        WindowProvider.toastError(context, 'Something went wrong');
+        return null;
+      }
+      await setUserData(userData);
       return credential.user;
     } on FirebaseAuthException catch (e) {
       WindowProvider.toastError(context, '[${e.code}] ${e.message}', e);
@@ -92,7 +96,7 @@ class AuthenticatorService {
       final credential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       final userData = LmbUser(name: name, nik: nik, email: email, createdAt: DateTime.now());
       await FirestoreService.instance.setUserData(user: userData);
-      setUserData(userData);
+      await setUserData(userData);
       return credential.user;
     } on FirebaseAuthException catch (e) {
       WindowProvider.toastError(context, '[${e.code}] ${e.message}', e);
@@ -197,11 +201,11 @@ class AuthenticatorService {
   Future<bool> handleChangeName(BuildContext context, String newName) async {
     try {
       final userData = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
-      final userEmail = userData?.email;
-      if (userEmail != null) {
-        await FirestoreService.instance.updateUserField(userEmail, 'name', newName);
-        final userData = await FirestoreService.instance.getUserByEmail(context, userEmail);
-        setUserData(userData);
+      final userNik = userData?.nik;
+      if (userNik != null) {
+        await FirestoreService.instance.updateUserField(userNik, 'name', newName);
+        final userData = await FirestoreService.instance.getUserByNik(context, userNik);
+        await setUserData(userData);
         return true;
       } else {
         WindowProvider.toastError(context, 'Something went wrong');

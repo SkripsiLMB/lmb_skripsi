@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
+import 'package:lmb_skripsi/helpers/logic/supabase_service.dart';
 import 'package:lmb_skripsi/helpers/logic/theme_notifier.dart';
 import 'package:lmb_skripsi/helpers/ui/theme.dart';
 import 'package:lmb_skripsi/pages/auth/email_verification_page.dart';
@@ -12,7 +14,9 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp();
+  await SupabaseService.initializeApp();
 
   final isRemembered = await LmbLocalStorage.getValue<bool>("remember_me") ?? false;
   final isLoggedIn = FirebaseAuth.instance.currentUser != null;
@@ -36,7 +40,7 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeNotifier>(
       builder: (context, themeNotifier, _) {
         return MaterialApp(
-          title: 'Lumbung Makmur Bersama',
+          title: 'Lumbung Makmur',
           debugShowCheckedModeBanner: false,
           theme: lmbLightTheme,
           darkTheme: lmbDarkTheme,

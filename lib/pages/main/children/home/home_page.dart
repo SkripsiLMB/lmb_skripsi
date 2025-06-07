@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:lmb_skripsi/components/card.dart';
+import 'package:lmb_skripsi/components/product_card.dart';
 import 'package:lmb_skripsi/components/profile_picture.dart';
+import 'package:lmb_skripsi/components/text_button.dart';
 import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
-import 'package:lmb_skripsi/model/lmb_user.dart';
+import 'package:lmb_skripsi/pages/main/children/home/children/product_page.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -43,23 +46,21 @@ class _HomepageState extends State<Homepage> {
             Padding(
               padding: EdgeInsets.fromLTRB(16, 12, 16, 20),
               child: Row(
-                spacing: 12,
+                spacing: 4,
                 children: [
                   SizedBox(
                     width: 50,
                     height: 50,
                     child: ClipRRect(
                       borderRadius: BorderRadiusGeometry.circular(50),
-                      child: Image.asset(
-                        "assets/app_icon.png",
+                      child: SvgPicture.asset(
+                        "assets/logo_white.svg",
                         width: 50,
                         height: 50,
-                        scale: 1,
                         fit: BoxFit.fill,
                       ),
                     ),
                   ),
-                  
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +74,7 @@ class _HomepageState extends State<Homepage> {
                         ),
                       ),
                       Text(
-                        "Koperasi LMB",
+                        "Koperasi Lumbung Makmur",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -99,17 +100,18 @@ class _HomepageState extends State<Homepage> {
                   color: Theme.of(context).colorScheme.background,
                   width: MediaQuery.of(context).size.width,
                   child: SingleChildScrollView(
-                      child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // NOTE: User card
-                          StreamBuilder(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // NOTE: User card
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: StreamBuilder(
                             stream: AuthenticatorService.instance.userDataStream, 
                             builder: (context, snapshot) {
                               return LmbCard(
+                                isFullWidth: true,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -213,13 +215,135 @@ class _HomepageState extends State<Homepage> {
                               );
                             }
                           ),
-                        ],
-                      ),
+                        ),
+
+                        // NOTE: Saving scrollable
+                        Padding(
+                          padding: EdgeInsetsGeometry.fromLTRB(16, 0, 16, 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Savings',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              LmbTextButton(
+                                text: "More", 
+                                color: Theme.of(context).textTheme.bodyLarge?.color ?? LmbColors.brand,
+                                size: 18,
+                                suffixIcon: Icons.arrow_forward_ios_rounded,
+                                onTap: () {
+
+                                }
+                              )
+                            ],
+                          ),
+                        ),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Padding(
+                            padding: EdgeInsetsGeometry.symmetric(horizontal: 16),
+                            child: Row(
+                              spacing: 8,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                LmbCard(
+                                  child: SizedBox(width: 100, height: 60),
+                                ),
+                                LmbCard(
+                                  child: SizedBox(width: 100, height: 60),
+                                ),
+                                LmbCard(
+                                  child: SizedBox(width: 100, height: 60),
+                                ),
+                                LmbCard(
+                                  child: SizedBox(width: 100, height: 60),
+                                ),
+                                LmbCard(
+                                  child: SizedBox(width: 100, height: 60),
+                                ),
+                                LmbCard(
+                                  child: SizedBox(width: 100, height: 60),
+                                ),
+                                LmbCard(
+                                  child: SizedBox(width: 100, height: 60),
+                                ),
+                              ],
+                            ),
+                          )
+                        ),
+
+                        // NOTE: Product scrollable
+                        Padding(
+                          padding: EdgeInsetsGeometry.fromLTRB(16, 16, 16, 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Product',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              LmbTextButton(
+                                text: "More", 
+                                color: Theme.of(context).textTheme.bodyLarge?.color ?? LmbColors.brand,
+                                size: 18,
+                                suffixIcon: Icons.arrow_forward_ios_rounded,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const ProductPage()),
+                                  );
+                                }
+                              )
+                            ],
+                          ),
+                        ),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Padding(
+                            padding: EdgeInsetsGeometry.symmetric(horizontal: 16),
+                            child: Row(
+                              spacing: 8,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                ProductCard(
+                                  name: "Chitato", 
+                                  price: 12000
+                                ),
+                                ProductCard(
+                                  name: "Chitato", 
+                                  price: 12000
+                                ),
+                                ProductCard(
+                                  name: "Chitato", 
+                                  price: 12000
+                                ),
+                                ProductCard(
+                                  name: "Chitato", 
+                                  price: 12000
+                                ),
+                                ProductCard(
+                                  name: "Chitato", 
+                                  price: 12000
+                                ),
+                                ProductCard(
+                                  name: "Chitato", 
+                                  price: 12000
+                                ),
+                              ],
+                            ),
+                          )
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

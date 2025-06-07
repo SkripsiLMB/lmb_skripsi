@@ -101,6 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             style: Theme.of(context).textTheme.labelSmall,
                           ),
                           LmbCard(
+                            isFullWidth: true,
                             usePadding: false,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -213,6 +214,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             style: Theme.of(context).textTheme.labelSmall,
                           ),
                           LmbCard(
+                            isFullWidth: true,
                             usePadding: false,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,

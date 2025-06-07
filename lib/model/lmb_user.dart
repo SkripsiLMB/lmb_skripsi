@@ -17,7 +17,7 @@ class LmbUser {
 
   Map<String, dynamic> toJson() {
     return {
-      'profile_picture_url': profilePictureUrl,
+      'profile_picture_url': profilePictureUrl ?? "",
       'name': name,
       'nik': nik,
       'email': email,
@@ -38,7 +38,7 @@ class LmbUser {
     }
 
     return LmbUser(
-      profilePictureUrl: json['profile_picture_url'],
+      profilePictureUrl: json['profile_picture_url'] == "" ? null : json['profile_picture_url'],
       name: json['name'],
       nik: json['nik'],
       email: json['email'],

@@ -7,7 +7,7 @@ import 'package:lmb_skripsi/components/base_element.dart';
 import 'package:lmb_skripsi/components/button.dart';
 import 'package:lmb_skripsi/components/profile_picture.dart';
 import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
-import 'package:lmb_skripsi/helpers/logic/fbstorage_service.dart';
+import 'package:lmb_skripsi/helpers/logic/sbstorage_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
@@ -92,9 +92,9 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
                 WindowProvider.toastError(context, 'Something went wrong');
                 return;
               }
-              userData.profilePictureUrl = await FbStorageService.instance.uploadImage(
+              userData.profilePictureUrl = await SbStorageService.instance.uploadImage(
                 imageFile: selectedImage!,
-                path: 'users/profile_picture/${userData.email}.jpg',
+                path: '${userData.nik}.jpg',
               );
               AuthenticatorService.instance.setUserData(userData);
               WindowProvider.toastSuccess(context, 'Profile picture updated successfully');
