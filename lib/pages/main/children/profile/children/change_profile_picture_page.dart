@@ -6,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:lmb_skripsi/components/base_element.dart';
 import 'package:lmb_skripsi/components/button.dart';
 import 'package:lmb_skripsi/components/profile_picture.dart';
-import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
 import 'package:lmb_skripsi/helpers/logic/sbstorage_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
@@ -14,11 +13,11 @@ import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
 
 class ChangeProfilePicturePage extends StatefulWidget {
-  final String? currentProfileUrl;
+  final String? nik;
 
   const ChangeProfilePicturePage({
     super.key,
-    this.currentProfileUrl,
+    this.nik,
   });
 
   @override
@@ -31,6 +30,8 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
 
   @override
   Widget build(BuildContext context) {
+    final profilePictureUrl = SbStorageService.instance.getPublicUrl('${widget.nik}.jpg', "profile-pictures");
+
     return LmbBaseElement(
       isScrollable: true,
       title: "Change Profile Picture",
@@ -58,7 +59,7 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
               children: [
                 LmbProfilePicture(
                   localFile: selectedImage,
-                  networkUrl: widget.currentProfileUrl,
+                  networkUrl: profilePictureUrl,
                   radius: 80
                 ),
                 const Text(
@@ -92,11 +93,11 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
                 WindowProvider.toastError(context, 'Something went wrong');
                 return;
               }
-              userData.profilePictureUrl = await SbStorageService.instance.uploadImage(
+              await SbStorageService.instance.uploadImage(
+                bucket: "profile-pictures",
                 imageFile: selectedImage!,
                 path: '${userData.nik}.jpg',
               );
-              AuthenticatorService.instance.setUserData(userData);
               WindowProvider.toastSuccess(context, 'Profile picture updated successfully');
               Navigator.pop(context); 
             } catch (e) {

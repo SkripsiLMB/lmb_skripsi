@@ -3,6 +3,7 @@ import 'package:lmb_skripsi/components/card.dart';
 import 'package:lmb_skripsi/components/menu_list.dart';
 import 'package:lmb_skripsi/components/profile_picture.dart';
 import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
+import 'package:lmb_skripsi/helpers/logic/sbstorage_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
@@ -40,11 +41,16 @@ class _ProfilePageState extends State<ProfilePage> {
               child: StreamBuilder(
                 stream: AuthenticatorService.instance.userDataStream, 
                 builder: (context, snapshot) {
+                  final user = snapshot.data;
+                  final profilePictureUrl = user != null
+                    ? SbStorageService.instance.getPublicUrl('${user.nik}.jpg', "profile-pictures")
+                    : null;
+
                   return Row(
                     spacing: 16,
                     children: [
                       LmbProfilePicture(
-                        networkUrl: snapshot.data?.profilePictureUrl,
+                        networkUrl: profilePictureUrl,
                         radius: 35
                       ),
                       Column(
@@ -114,13 +120,17 @@ class _ProfilePageState extends State<ProfilePage> {
                                   description: "Make changes to your profile picture",
                                   isFirstItem: true,
                                   onTap: () {
-                                    final profilePictureUrl = AuthenticatorService.instance.userData?.profilePictureUrl;
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ChangeProfilePicturePage(currentProfileUrl: profilePictureUrl),
-                                      ),
-                                    );
+                                    final userNik = AuthenticatorService.instance.userData?.nik;
+                                    if (userNik != null) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ChangeProfilePicturePage(nik: userNik),
+                                        ),
+                                      );
+                                    } else {
+                                      WindowProvider.toastError(context, "Something went wrong.");
+                                    }
                                   },
                                 ),
                                 MenuList(

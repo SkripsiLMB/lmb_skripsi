@@ -6,6 +6,7 @@ import 'package:lmb_skripsi/components/product_card.dart';
 import 'package:lmb_skripsi/components/profile_picture.dart';
 import 'package:lmb_skripsi/components/text_button.dart';
 import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
+import 'package:lmb_skripsi/helpers/logic/sbstorage_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/pages/main/children/home/children/product_page.dart';
@@ -110,6 +111,11 @@ class _HomepageState extends State<Homepage> {
                           child: StreamBuilder(
                             stream: AuthenticatorService.instance.userDataStream, 
                             builder: (context, snapshot) {
+                              final user = snapshot.data;
+                              final profilePictureUrl = user != null
+                                ? SbStorageService.instance.getPublicUrl('${user.nik}.jpg', "profile-pictures")
+                                : null;
+
                               return LmbCard(
                                 isFullWidth: true,
                                 child: Column(
@@ -129,7 +135,7 @@ class _HomepageState extends State<Homepage> {
                                                 spacing: 8,
                                                 children: [
                                                   LmbProfilePicture(
-                                                    networkUrl: snapshot.data?.profilePictureUrl,
+                                                    networkUrl: profilePictureUrl,
                                                     radius: 20
                                                   ),
                                                   Text(

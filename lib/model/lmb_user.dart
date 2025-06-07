@@ -1,14 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LmbUser {
-  String? profilePictureUrl;
   String name;
   String nik;
   String email;
   DateTime createdAt;
 
   LmbUser({
-    this.profilePictureUrl,
     required this.name,
     required this.nik,
     required this.email,
@@ -17,7 +15,6 @@ class LmbUser {
 
   Map<String, dynamic> toJson() {
     return {
-      'profile_picture_url': profilePictureUrl ?? "",
       'name': name,
       'nik': nik,
       'email': email,
@@ -38,7 +35,6 @@ class LmbUser {
     }
 
     return LmbUser(
-      profilePictureUrl: json['profile_picture_url'] == "" ? null : json['profile_picture_url'],
       name: json['name'],
       nik: json['nik'],
       email: json['email'],

@@ -11,13 +11,12 @@ class SbStorageService {
 
   // NOTE: supabase var
   final SupabaseClient _client = Supabase.instance.client;
-  final String _defaultBucket = 'general';
 
   // NOTE: buat upload
-  Future<String> uploadImage({
+  Future<String?> uploadImage({
     required File imageFile,
     required String path,
-    String bucket = 'profile-pictures',
+    required String bucket,
     int quality = 75,
   }) async {
     try {
@@ -33,20 +32,24 @@ class SbStorageService {
         ),
       );
 
-      return getPublicUrl(path, bucket: bucket);
+      return getPublicUrl(path, bucket);
     } catch (e) {
       throw Exception('Upload failed: $e');
     }
   }
 
   // NOTE: ambil url download
-  String getPublicUrl(String path, {String? bucket}) {
-    return _client.storage.from(bucket ?? _defaultBucket).getPublicUrl(path);
+  String? getPublicUrl(String? path, String bucket) {
+    if (path == null || path.trim().isEmpty) return null;
+    return _client.storage.from(bucket).getPublicUrl(path);
   }
 
   // NOTE: delete gambar
-  Future<void> deleteImage(String path, {String? bucket}) async {
-    await _client.storage.from(bucket ?? _defaultBucket).remove([path]);
+  Future<void> deleteImage(String? path, String bucket) async {
+    if (path == null) {
+      return;
+    }
+    await _client.storage.from(bucket).remove([path]);
   }
 
   // NOTE: compress
