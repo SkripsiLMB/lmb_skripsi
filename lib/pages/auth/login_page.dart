@@ -98,10 +98,10 @@ class _LoginPageState extends State<LoginPage> {
 
             setState(() => isActionLoading = true);
             User? user = await AuthenticatorService.instance.handleLogin(context, email, password);
-            setState(() => isActionLoading = false);
             if (user != null) {
               await LmbLocalStorage.setValue<bool>("remember_me", rememberMe);
             }
+            setState(() => isActionLoading = false);
           },
         ),
         const SizedBox(height: 16),

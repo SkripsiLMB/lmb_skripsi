@@ -6,6 +6,7 @@ class LmbTextField extends StatefulWidget {
   final TextInputType? inputType;
   final bool isPassword;
   final bool useLabel;
+  final bool isDisabled;
 
   const LmbTextField({
     super.key,
@@ -13,7 +14,8 @@ class LmbTextField extends StatefulWidget {
     required this.controller,
     this.inputType,
     this.isPassword = false,
-    this.useLabel = false
+    this.useLabel = false,
+    this.isDisabled = false
   });
 
   @override
@@ -39,6 +41,7 @@ class _LmbTextFieldState extends State<LmbTextField> {
           controller: widget.controller,
           keyboardType: widget.inputType,
           obscureText: widget.isPassword ? _obscureText : false,
+          enabled: !widget.isDisabled,
           decoration: InputDecoration(
             hintText: widget.useLabel ? null : widget.hint,
             suffixIcon: widget.isPassword

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lmb_skripsi/components/card.dart';
+import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
@@ -13,21 +14,12 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  LmbUser? userData;
   bool showSHU = false;
 
   @override
   void initState() {
     super.initState();
-    loadUserData();
     loadSHUVisibility();
-  }
-
-  Future<void> loadUserData() async {
-    final data = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
-    setState(() {
-      userData = data as LmbUser;
-    });
   }
 
   Future<void> loadSHUVisibility() async {
@@ -72,7 +64,7 @@ class _HomepageState extends State<Homepage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Welcome,",
+                        "Welcome to",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
@@ -80,7 +72,7 @@ class _HomepageState extends State<Homepage> {
                         ),
                       ),
                       Text(
-                        userData?.name ?? "Unknown User",
+                        "Koperasi LMB",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -113,79 +105,59 @@ class _HomepageState extends State<Homepage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // NOTE: User card
-                          LmbCard(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                // NOTE: User name
-                                Row(
+                          StreamBuilder(
+                            stream: AuthenticatorService.instance.userDataStream, 
+                            builder: (context, snapshot) {
+                              return LmbCard(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadiusGeometry.circular(8),
-                                      child: Container(
-                                        color: LmbColors.brand,
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                          child: Row(
-                                            spacing: 6,
-                                            children: [
-                                              SizedBox(
-                                                width: 40,
-                                                height: 40,
-                                                child: ClipRRect(
-                                                  borderRadius: BorderRadiusGeometry.circular(40),
-                                                  child: Image.asset(
-                                                    "assets/app_icon.png",
+                                    // NOTE: User name
+                                    Row(
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius: BorderRadiusGeometry.circular(8),
+                                          child: Container(
+                                            color: LmbColors.brand,
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                              child: Row(
+                                                spacing: 6,
+                                                children: [
+                                                  SizedBox(
                                                     width: 40,
                                                     height: 40,
-                                                    scale: 1,
-                                                    fit: BoxFit.fill,
+                                                    child: ClipRRect(
+                                                      borderRadius: BorderRadiusGeometry.circular(40),
+                                                      child: Image.asset(
+                                                        "assets/app_icon.png",
+                                                        width: 40,
+                                                        height: 40,
+                                                        scale: 1,
+                                                        fit: BoxFit.fill,
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
+                                                  Text(
+                                                    snapshot.data?.name ?? "Unknown User",
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.w600,
+                                                      fontSize: 18,
+                                                      color: Colors.white
+                                                    ),
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ],
                                               ),
-                                              Text(
-                                                userData?.name ?? "Unknown User",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 18,
-                                                  color: Colors.white
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ],
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                SizedBox(height: 16),
+                                    SizedBox(height: 16),
 
-                                // NOTE: NIK
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                        width: 120,
-                                        child: Text(
-                                        "NIK",
-                                        style: Theme.of(context).textTheme.labelLarge,
-                                      ),
-                                    ),
-                                    Text(
-                                      ": ${userData?.nik ?? "-"}",
-                                      style: Theme.of(context).textTheme.labelMedium,
-                                    ),
-                                  ],
-                                ),
-
-                                // NOTE: Total SHU
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
+                                    // NOTE: NIK
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -193,37 +165,62 @@ class _HomepageState extends State<Homepage> {
                                         SizedBox(
                                             width: 120,
                                             child: Text(
-                                            "Total SHU",
+                                            "NIK",
                                             style: Theme.of(context).textTheme.labelLarge,
                                           ),
                                         ),
                                         Text(
-                                          showSHU ? ": Rp0" : ": ••••••",
+                                          ": ${snapshot.data?.nik ?? "-"}",
                                           style: Theme.of(context).textTheme.labelMedium,
                                         ),
-                                      ]
+                                      ],
                                     ),
-                                    IconButton(
-                                      icon: Icon(
-                                        showSHU ? Icons.visibility : Icons.visibility_off,
-                                        size: 20,
-                                      ),
-                                      onPressed: () async {
-                                        setState(() => showSHU = !showSHU);
-                                        await LmbLocalStorage.setValue<bool>("show_shu", showSHU);
-                                      },
+
+                                    // NOTE: Total SHU
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                                width: 120,
+                                                child: Text(
+                                                "Total SHU",
+                                                style: Theme.of(context).textTheme.labelLarge,
+                                              ),
+                                            ),
+                                            Text(
+                                              showSHU ? ": Rp0" : ": ••••••",
+                                              style: Theme.of(context).textTheme.labelMedium,
+                                            ),
+                                          ]
+                                        ),
+                                        IconButton(
+                                          icon: Icon(
+                                            showSHU ? Icons.visibility : Icons.visibility_off,
+                                            size: 20,
+                                          ),
+                                          onPressed: () async {
+                                            setState(() => showSHU = !showSHU);
+                                            await LmbLocalStorage.setValue<bool>("show_shu", showSHU);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 16),
+                                    
+                                    // NOTE: Member Since
+                                    Text(
+                                      'Member since: ${DateFormat('dd/MM/yyyy').format(snapshot.data?.createdAt ?? DateTime.now())}',
+                                      style: Theme.of(context).textTheme.labelSmall,
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 16),
-                                
-                                // NOTE: Member Since
-                                Text(
-                                  'Member since: ${DateFormat('dd/MM/yyyy').format(userData?.createdAt ?? DateTime.now())}',
-                                  style: Theme.of(context).textTheme.labelSmall,
-                                ),
-                              ],
-                            ),
+                              );
+                            }
                           ),
                         ],
                       ),

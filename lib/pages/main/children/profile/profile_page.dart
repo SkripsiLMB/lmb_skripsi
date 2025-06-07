@@ -6,7 +6,8 @@ import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
-import 'package:lmb_skripsi/pages/main/children/profile/children/account_settings_page.dart';
+import 'package:lmb_skripsi/pages/main/children/profile/children/change_email_page.dart';
+import 'package:lmb_skripsi/pages/main/children/profile/children/change_username_page.dart';
 import 'package:lmb_skripsi/pages/main/children/profile/children/dark_mode_settings_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -17,19 +18,9 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  LmbUser? userData;
-
   @override
   void initState() {
     super.initState();
-    loadUserData();
-  }
-
-  Future<void> loadUserData() async {
-    final data = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
-    setState(() {
-      userData = data as LmbUser;
-    });
   }
 
   @override
@@ -62,28 +53,33 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        userData?.name ?? "Unknown User",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.white
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        "NIK: ${userData?.nik ?? "-"}",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                          color: Colors.white
-                        ),
-                      ),
-                    ],
+                  StreamBuilder(
+                    stream: AuthenticatorService.instance.userDataStream, 
+                    builder: (context, snapshot) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            snapshot.data?.name ?? "Unknown User",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.white
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            "NIK: ${snapshot.data?.nik ?? "-"}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: Colors.white
+                            ),
+                          ),
+                        ],
+                      );
+                    }
                   ),
                 ],
               ),
@@ -121,14 +117,64 @@ class _ProfilePageState extends State<ProfilePage> {
                               spacing: 6,
                               children: [
                                 MenuList(
-                                  icon: Icons.person_rounded,
-                                  title: "My Account",
-                                  description: "Make changes to your account",
+                                  icon: Icons.chrome_reader_mode_rounded,
+                                  title: "Change Username",
+                                  description: "Make changes to your username",
                                   isFirstItem: true,
                                   onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const AccountSettingsPage()),
+                                    final userName = AuthenticatorService.instance.userData?.name;
+                                    if (userName != null) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ChangeUsernamePage(currentName: userName),
+                                        ),
+                                      );
+                                    } else {
+                                      WindowProvider.toastError(context, "Something went wrong.");
+                                    }
+                                  },
+                                ),
+                                MenuList(
+                                  icon: Icons.email_rounded,
+                                  title: "Change Profile Email",
+                                  description: "Make changes to your email",
+                                  onTap: () {
+                                    final userEmail = AuthenticatorService.instance.userData?.email;
+                                    if (userEmail != null) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ChangeEmailPage(currentEmail: userEmail),
+                                        ),
+                                      );
+                                    } else {
+                                      WindowProvider.toastError(context, "Something went wrong.");
+                                    }
+                                  },
+                                ),
+                                MenuList(
+                                  icon: Icons.lock_person_rounded,
+                                  title: "Change Password",
+                                  description: "Make changes to your password",
+                                  onTap: () {
+                                    WindowProvider.showDialogBox(
+                                      context: context, 
+                                      title: "Change Password Confirmation", 
+                                      description: "Are you sure you want to change your password? We will send a password reset link to your current email.", 
+                                      primaryText: "Change Password", 
+                                      onPrimary: () async {
+                                        final userData = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
+                                        final userEmail = userData?.email;
+                                        if (userEmail != null) {
+                                          if (await AuthenticatorService.instance.handleForgotPassword(context, userEmail)) {
+                                            WindowProvider.toastSuccess(context, 'Check your email inbox');
+                                          }
+                                        } else {
+                                          WindowProvider.toastError(context, 'Something went wrong');
+                                        }
+                                      }, 
+                                      secondaryText: "Cancel",
                                     );
                                   },
                                 ),
@@ -140,9 +186,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                   onTap: () {
                                     WindowProvider.showDialogBox(
                                       context: context, 
-                                      title: "Logout Confirmation", 
-                                      description: "Are you sure you want to logout from your account?", 
-                                      primaryText: "Logout", 
+                                      title: "Sign Out Confirmation", 
+                                      description: "Are you sure you want to sign out from your account?", 
+                                      primaryText: "Sign out", 
                                       onPrimary: () {
                                         AuthenticatorService.instance.handleLogout();
                                       }, 

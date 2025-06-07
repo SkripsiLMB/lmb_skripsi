@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:lmb_skripsi/components/navigation_bar.dart';
+import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
 import 'package:lmb_skripsi/pages/main/children/home/home_page.dart';
 import 'package:lmb_skripsi/pages/main/children/loan/loan_page.dart';
 import 'package:lmb_skripsi/pages/main/children/profile/profile_page.dart';
@@ -31,9 +32,22 @@ class _MainPageState extends State<MainPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _initializeUser();
+  }
+
+  Future<void> _initializeUser() async {
+    await AuthenticatorService.instance.initializeUserData(context);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-    body: _pages[_selectedIndex],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _pages,
+      ),
       resizeToAvoidBottomInset: true,
       extendBody: true,
       bottomNavigationBar: LmbBottomNavBar(

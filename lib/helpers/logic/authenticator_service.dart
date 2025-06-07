@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lmb_skripsi/helpers/logic/firestore_service.dart';
@@ -22,12 +24,58 @@ class AuthenticatorService {
     return _auth.authStateChanges();
   }
 
+  // NOTE: Handle user data
+  LmbUser? _userData;
+  LmbUser? get userData => _userData;
+  final StreamController<LmbUser?> _userDataController = StreamController<LmbUser?>.broadcast();
+  Stream<LmbUser?> get userDataStream => _userDataController.stream;  
+
+  set userData(LmbUser? value) {
+    _userData = value;
+    _userDataController.add(value);
+  }
+ 
+  void dispose() {
+    _userDataController.close();
+  }
+
+  // NOTE: Update stream user data
+  Future<void> setUserData(LmbUser userData) async {
+    await LmbLocalStorage.setValue<LmbUser>("user_data", userData, toJson: (user) => user.toJson());
+    this.userData = userData;
+  }
+
+  // NOTE: Set stream user data awal
+  Future<void> initializeUserData(BuildContext context) async {
+  final localUserData = await LmbLocalStorage.getValue<LmbUser>(
+    "user_data",
+    fromJson: (json) => LmbUser.fromJson(json),
+  );
+
+  final userEmail = localUserData?.email;
+
+  if (userEmail != null) {
+    try {
+      final firestoreUser = await FirestoreService.instance.getUserByEmail(context, userEmail);
+      setUserData(firestoreUser);
+    } catch (e) {
+      userData = localUserData;
+      WindowProvider.toastError(context, "Limited access due to an error", e);
+    }
+  } else {
+    if (currentUser != null) {
+      WindowProvider.toastError(context, "Session expired, please log in again");
+    }
+    handleLogout();
+  }
+}
+
   // NOTE: untuk login
   Future<User?> handleLogin(BuildContext context, String email, String password) async {
     try {
       final credential = await _auth.signInWithEmailAndPassword(email: email, password: password);
       final userData = await FirestoreService.instance.getUserByEmail(context, email);
-      await LmbLocalStorage.setValue<LmbUser>("user_data", userData, toJson: (user) => user.toJson());
+      setUserData(userData);
       return credential.user;
     } on FirebaseAuthException catch (e) {
       WindowProvider.toastError(context, '[${e.code}] ${e.message}', e);
@@ -44,7 +92,7 @@ class AuthenticatorService {
       final credential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       final userData = LmbUser(name: name, nik: nik, email: email, createdAt: DateTime.now());
       await FirestoreService.instance.setUserData(user: userData);
-      await LmbLocalStorage.setValue<LmbUser>("user_data", userData, toJson: (user) => user.toJson());
+      setUserData(userData);
       return credential.user;
     } on FirebaseAuthException catch (e) {
       WindowProvider.toastError(context, '[${e.code}] ${e.message}', e);
@@ -73,6 +121,7 @@ class AuthenticatorService {
   Future<void> handleLogout() async {
     await _auth.signOut();
     await LmbLocalStorage.clearAllValue();
+    userData = null;
   }
 
   // NOTE: untuk verif email
@@ -106,6 +155,60 @@ class AuthenticatorService {
       return false;
     } catch (e) {
       WindowProvider.toastError(context, 'An unknown error occurred', e);
+      return false;
+    }
+  }
+
+  // NOTE: Change email
+  Future<bool> handleChangeEmail(BuildContext context, String newEmail, String password) async {
+    try {
+      try {
+        await _auth.signInWithEmailAndPassword(email: newEmail, password: password);
+      } on FirebaseAuthException catch (e) {
+        WindowProvider.toastError(context, '[${e.code}] ${e.message}', e);
+        handleLogout();
+        return false;
+      } catch (e) {
+        WindowProvider.toastError(context, 'An unknown error occurred', e);
+        return false;
+      }
+      await currentUser?.updateEmail(newEmail);
+      await currentUser?.sendEmailVerification();
+      final userData = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
+      final userEmail = userData?.email;
+      if (userEmail != null) {
+        await FirestoreService.instance.updateUserField(userEmail, 'email', newEmail);
+        await currentUser?.reload();
+        return true;
+      } else {
+        WindowProvider.toastError(context, 'Something went wrong');
+        return false;
+      }
+    } on FirebaseAuthException catch (e) {
+      WindowProvider.toastError(context, '[${e.code}] ${e.message}', e);
+      return false;
+    } catch (e) {
+      WindowProvider.toastError(context, 'An unknown error occurred', e);
+      return false;
+    }
+  }
+
+  // NOTE: Change name
+  Future<bool> handleChangeName(BuildContext context, String newName) async {
+    try {
+      final userData = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
+      final userEmail = userData?.email;
+      if (userEmail != null) {
+        await FirestoreService.instance.updateUserField(userEmail, 'name', newName);
+        final userData = await FirestoreService.instance.getUserByEmail(context, userEmail);
+        setUserData(userData);
+        return true;
+      } else {
+        WindowProvider.toastError(context, 'Something went wrong');
+        return false;
+      }
+    } catch (e) {
+      WindowProvider.toastError(context, 'Failed to update name.', e);
       return false;
     }
   }

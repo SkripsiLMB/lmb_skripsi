@@ -14,7 +14,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  if (await LmbLocalStorage.getValue<bool>("remember_me") ?? false) {
+  final isRemembered = await LmbLocalStorage.getValue<bool>("remember_me") ?? false;
+  final isLoggedIn = FirebaseAuth.instance.currentUser != null;
+  if (!isRemembered && isLoggedIn) {
     await AuthenticatorService.instance.handleLogout();
   }
 
