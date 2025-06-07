@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lmb_skripsi/components/card.dart';
+import 'package:lmb_skripsi/components/profile_picture.dart';
 import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
@@ -123,21 +124,11 @@ class _HomepageState extends State<Homepage> {
                                             child: Padding(
                                               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                               child: Row(
-                                                spacing: 6,
+                                                spacing: 8,
                                                 children: [
-                                                  SizedBox(
-                                                    width: 40,
-                                                    height: 40,
-                                                    child: ClipRRect(
-                                                      borderRadius: BorderRadiusGeometry.circular(40),
-                                                      child: Image.asset(
-                                                        "assets/app_icon.png",
-                                                        width: 40,
-                                                        height: 40,
-                                                        scale: 1,
-                                                        fit: BoxFit.fill,
-                                                      ),
-                                                    ),
+                                                  LmbProfilePicture(
+                                                    networkUrl: snapshot.data?.profilePictureUrl,
+                                                    radius: 20
                                                   ),
                                                   Text(
                                                     snapshot.data?.name ?? "Unknown User",

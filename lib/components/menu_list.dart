@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 
@@ -76,6 +78,7 @@ class MenuList extends StatelessWidget {
             trailingItem ?? Icon(
               Icons.arrow_forward_ios_rounded,
               size: 24,
+              color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
             )
           ],
         )

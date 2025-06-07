@@ -11,8 +11,6 @@ class LoanPage extends StatefulWidget {
 }
 
 class _LoanPageState extends State<LoanPage> {
-  final employeeNumberController = TextEditingController();
-  final nameController = TextEditingController();
   final loanAmountController = TextEditingController();
   final reasonController = TextEditingController();
   final timePeriodList = ["1 Month", "2 Month", "3 Month", "6 Months", "12 Months", "24 Months"];
@@ -29,26 +27,11 @@ class _LoanPageState extends State<LoanPage> {
       useLargeAppBar: true,
       showBackButton: false,
       children: [
-        LmbTextField(
-          hint: "Employee Number", 
-          useLabel: true,
-          controller: employeeNumberController,
-          inputType: TextInputType.number,
-        ),
-        SizedBox(height: 16),
-
-        LmbTextField(
-          hint: "Name", 
-          useLabel: true,
-          controller: employeeNumberController,
-          inputType: TextInputType.name,
-        ),
-        SizedBox(height: 16),
 
         LmbTextField(
           hint: "Loan Amount", 
           useLabel: true,
-          controller: employeeNumberController,
+          controller: loanAmountController,
           inputType: TextInputType.number,
         ),
         SizedBox(height: 16),

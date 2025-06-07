@@ -50,7 +50,7 @@ class _ChangeUsernamePageState extends State<ChangeUsernamePage> {
 
         // NOTE: Bagian tombol
         LmbPrimaryButton(
-          text: 'Confirm',
+          text: 'Save',
           isLoading: isActionLoading,
           isFullWidth: true,
           onPressed: () async {
