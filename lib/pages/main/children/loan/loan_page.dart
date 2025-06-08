@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lmb_skripsi/components/base_element.dart';
+import 'package:lmb_skripsi/components/card.dart';
 import 'package:lmb_skripsi/components/dropdown_field.dart';
 import 'package:lmb_skripsi/components/text_field.dart';
 import 'package:lmb_skripsi/helpers/logic/remote_config_service.dart';
+import 'package:lmb_skripsi/helpers/logic/value_formatter.dart';
 import 'package:lmb_skripsi/model/lmb_loan_interest.dart';
 
 class LoanPage extends StatefulWidget {
@@ -21,6 +23,9 @@ class _LoanPageState extends State<LoanPage> {
   List<String> timePeriodList = [];
   String? selectedTimePeriod;
   double? selectedInterest;
+  double totalInterest = 0;
+  double totalLoan = 0;
+  double monthlyInstallment = 0;
 
   @override
   void initState() {
@@ -49,14 +54,10 @@ class _LoanPageState extends State<LoanPage> {
     final months = int.parse(selectedTimePeriod!.split(' ').first);
     final rate = selectedInterest! / 100;
 
-    final totalInterest = amount * rate * (months / 12);
-    final totalLoan = amount + totalInterest;
-    final monthlyInstallment = totalLoan / months;
-
     setState(() {
-      // loanInterestController.text = totalInterest.toStringAsFixed(2);
-      // totalLoanController.text = totalLoan.toStringAsFixed(2);
-      // monthlyInstallmentController.text = monthlyInstallment.toStringAsFixed(2);
+      totalInterest = amount * rate * (months / 12);
+      totalLoan = amount + totalInterest;
+      monthlyInstallment = totalLoan / months;
     });
   }
 
@@ -100,9 +101,49 @@ class _LoanPageState extends State<LoanPage> {
             });
           },
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 64),
 
-        // Continue your other fields like interest, total loan, etc.
+        // NOTE: Bagian summary card
+        LmbCard(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("Interest Percentage"),
+                  Text(ValueFormatter.formatPercent((selectedInterest ?? 0)/100))
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("Total Interest"),
+                  Text(ValueFormatter.formatPriceIDR(totalInterest))
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("Total loan"),
+                  Text(ValueFormatter.formatPriceIDR(totalLoan))
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("Monthly Installment"),
+                  Text(ValueFormatter.formatPriceIDR(monthlyInstallment))
+                ],
+              ),
+            ],
+          ),
+        )
       ],
     );
   }

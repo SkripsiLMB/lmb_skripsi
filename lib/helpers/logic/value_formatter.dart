@@ -21,4 +21,18 @@ class ValueFormatter {
     );
     return formatter.format(amount);
   }
+
+  
+  static String formatPercent(num amount) {
+    final formatter = NumberFormat.decimalPercentPattern(locale: 'id', decimalDigits: 2);
+    String raw = formatter.format(amount);
+    final match = RegExp(r'^([\d.,]+)(%)$').firstMatch(raw);
+    if (match == null) return raw;
+    
+    String number = match.group(1)!;
+    String percent = match.group(2)!;
+    number = number.replaceAll(RegExp(r'([.,]\d*?[1-9])0+$'), r'\1'); // 18,50 → 18,5
+    number = number.replaceAll(RegExp(r'[.,]0+$'), ''); // 18,00 → 18
+    return '$number$percent';
+  }
 }
