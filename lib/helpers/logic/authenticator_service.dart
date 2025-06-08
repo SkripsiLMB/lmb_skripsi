@@ -216,4 +216,9 @@ class AuthenticatorService {
       return false;
     }
   }
+
+  // NOTE: Paksa stream reload
+  void forceReloadUserDataStream() {
+    _userDataController.add(_userData);
+  }
 }

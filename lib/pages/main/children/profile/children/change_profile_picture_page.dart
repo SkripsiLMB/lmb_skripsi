@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:lmb_skripsi/components/base_element.dart';
 import 'package:lmb_skripsi/components/button.dart';
 import 'package:lmb_skripsi/components/profile_picture.dart';
+import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
 import 'package:lmb_skripsi/helpers/logic/sbstorage_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
@@ -80,7 +81,8 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
           isLoading: isActionLoading,
           onPressed: () async {
             if (selectedImage == null) {
-              WindowProvider.toastError(context, 'Please select a photo first.');
+              WindowProvider.toastSuccess(context, 'Profile picture uunchanged');
+              Navigator.pop(context); 
               return;
             }
             setState(() => isActionLoading = true);
@@ -99,6 +101,7 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
                 path: '${userData.nik}.jpg',
               );
               WindowProvider.toastSuccess(context, 'Profile picture updated successfully');
+              AuthenticatorService.instance.forceReloadUserDataStream();
               Navigator.pop(context); 
             } catch (e) {
               WindowProvider.toastError(context, 'Failed to upload: ${e.toString()}');
