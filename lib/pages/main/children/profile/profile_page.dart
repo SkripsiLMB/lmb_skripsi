@@ -3,6 +3,7 @@ import 'package:lmb_skripsi/components/card.dart';
 import 'package:lmb_skripsi/components/menu_list.dart';
 import 'package:lmb_skripsi/components/profile_picture.dart';
 import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
+import 'package:lmb_skripsi/helpers/logic/remote_config_service.dart';
 import 'package:lmb_skripsi/helpers/logic/sbstorage_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
@@ -241,6 +242,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                       context,
                                       MaterialPageRoute(builder: (context) => const DarkModeSettingsPage()),
                                     );
+                                  },
+                                ),
+                                MenuList(
+                                  icon: Icons.settings_applications_rounded,
+                                  title: "Fetch remote config",
+                                  description: "Refetch remote config",
+                                  onTap: () async {
+                                    await RemoteConfigService.instance.forceRefetch();
+                                    WindowProvider.toastInfo(context, "Successfuly fetch remote config.");
                                   },
                                 ),
                               ],

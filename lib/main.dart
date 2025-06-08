@@ -1,12 +1,17 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
+import 'package:lmb_skripsi/helpers/logic/remote_config_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/logic/supabase_service.dart';
 import 'package:lmb_skripsi/helpers/logic/theme_notifier.dart';
 import 'package:lmb_skripsi/helpers/ui/theme.dart';
+import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/pages/auth/email_verification_page.dart';
 import 'package:lmb_skripsi/pages/auth/login_page.dart';
 import 'package:lmb_skripsi/pages/main/main_page.dart';
@@ -16,6 +21,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp();
+  await RemoteConfigService.instance.initialize();
   await SupabaseService.initializeApp();
 
   final isRemembered = await LmbLocalStorage.getValue<bool>("remember_me") ?? false;
@@ -45,49 +51,124 @@ class MyApp extends StatelessWidget {
           theme: lmbLightTheme,
           darkTheme: lmbDarkTheme,
           themeMode: themeNotifier.themeMode,
-          home: const AuthRedirectorGate(),
+          home: const AcessRedirectorGate(),
         );
       },
     );
   }
 }
 
-// NOTE: Mengatur starting poin awal yang akan ditemui user
-class AuthRedirectorGate extends StatelessWidget {
-  const AuthRedirectorGate({super.key});
+// NOTE: Mengatur apa yang akan ditampilkan pertama kali
+class AcessRedirectorGate extends StatefulWidget {
+  const AcessRedirectorGate({super.key});
+
+  @override
+  State<AcessRedirectorGate> createState() => _AcessRedirectorGateState();
+}
+
+class _AcessRedirectorGateState extends State<AcessRedirectorGate> {
+  late Future<bool> _isAppDisabledFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAppDisabledStatus();
+  }
+
+  void _loadAppDisabledStatus() {
+    _isAppDisabledFuture = RemoteConfigService.instance.get<bool>(
+      'is_app_disabled_config',
+      (json) => json as bool
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: AuthenticatorService.instance.authStateChanges(),
+    return FutureBuilder<bool>(
+      future: _isAppDisabledFuture,
       builder: (context, snapshot) {
+        // NOTE: Loading config
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+          return Scaffold(
+            body: Center(
+              child: ClipRRect(
+                borderRadius: BorderRadiusGeometry.circular(12),
+                child: Image(
+                  image: AssetImage("assets/app_icon.png"),
+                  width: 80,
+                  height: 80,
+                  alignment: AlignmentGeometry.center,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
           );
         }
 
-        final user = snapshot.data;
-
-        if (user == null) {
-          return const LoginPage();
+        // NOTE: Jika config dimatikan
+        if ((snapshot.data ?? false) || snapshot.hasError) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final title = snapshot.hasError ? "Config Malfunction" : "Application Disabled";
+            const description = "Please contact application developer for more informations.";
+            WindowProvider.showDialogBox(
+              context: context,
+              isBarrierDismissable: false,
+              title: title,
+              description: description,
+              primaryText: "Refresh",
+              onPrimary: () async {
+                await RemoteConfigService.instance.forceRefetch();
+                setState(() {
+                  _loadAppDisabledStatus();
+                });     
+              },
+              secondaryText: "Close Application",
+              onSecondary: () {
+                if (Platform.isAndroid) {
+                  SystemNavigator.pop();
+                } else if (Platform.isIOS) {
+                  exit(0);
+                }
+              },
+            );
+          });
         }
 
-        return FutureBuilder(
-          future: user.reload().then((_) => FirebaseAuth.instance.currentUser),
+        // NOTE: Mengatur page mana yang akan ditampilkan pertama kali
+        return StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
+            // NOTE: Loading login
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Scaffold(
                 body: Center(child: CircularProgressIndicator()),
               );
             }
 
-            final refreshedUser = snapshot.data;
-            if (refreshedUser != null && !refreshedUser.emailVerified) {
-              return const EmailVerificationPage();
+            // NOTE: Belum login
+            if (snapshot.data == null) {
+              return const LoginPage();
             }
 
-            return MainPage();
+            return FutureBuilder(
+              future: snapshot.data?.reload().then((_) => FirebaseAuth.instance.currentUser),
+              builder: (context, snapshot) {
+                // NOTE: Loading verif
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                // NOTE: Belum verif
+                if (!(snapshot.data?.emailVerified ?? true)) {
+                  return const EmailVerificationPage();
+                }
+
+                // NOTE: Sudah verif dan login
+                return const MainPage();
+              },
+            );
           },
         );
       },

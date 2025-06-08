@@ -40,9 +40,11 @@ class WindowProvider {
     String? secondaryText,
     VoidCallback? onSecondary,
     Color? customColor,
+    bool isBarrierDismissable = true,
   }) {
     showDialog(
       context: context,
+      barrierDismissible: isBarrierDismissable,
       builder: (BuildContext dialogContext) {
         return LmbDialog(
           title: title,
@@ -51,7 +53,7 @@ class WindowProvider {
           onPrimary: onPrimary,
           secondaryText: secondaryText,
           onSecondary: onSecondary,
-          color: customColor ?? LmbColors.brand,
+          color: customColor ?? LmbColors.brand
         );
       },
     );

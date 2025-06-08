@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lmb_skripsi/components/button.dart';
 import 'package:lmb_skripsi/components/text_button.dart';
-import 'package:lmb_skripsi/helpers/ui/color.dart';
 
 class LmbDialog extends StatelessWidget {
   final String title;
@@ -20,7 +19,7 @@ class LmbDialog extends StatelessWidget {
     required this.onPrimary,
     this.secondaryText,
     this.onSecondary,
-    this.color = LmbColors.brand
+    required this.color,
   });
 
   @override
