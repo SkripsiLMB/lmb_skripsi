@@ -15,19 +15,39 @@ class LmbProfilePicture extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ImageProvider imageProvider;
-
     if (localFile != null) {
-      imageProvider = FileImage(localFile!);
-    } else if (networkUrl != null && networkUrl!.isNotEmpty) {
-      imageProvider = NetworkImage(networkUrl!);
-    } else {
-      imageProvider = const AssetImage('assets/default_profile_picture.png');
+      return CircleAvatar(
+        radius: radius,
+        backgroundImage: FileImage(localFile!),
+      );
+    }
+
+    if (networkUrl != null && networkUrl!.isNotEmpty) {
+      return CircleAvatar(
+        radius: radius,
+        backgroundColor: Colors.grey.shade200,
+        child: ClipOval(
+          child: Image.network(
+            networkUrl!,
+            fit: BoxFit.cover,
+            width: radius * 2,
+            height: radius * 2,
+            errorBuilder: (context, error, stackTrace) {
+              return Image.asset(
+                'assets/default_profile_picture.png',
+                fit: BoxFit.cover,
+                width: radius * 2,
+                height: radius * 2,
+              );
+            },
+          ),
+        ),
+      );
     }
 
     return CircleAvatar(
       radius: radius,
-      backgroundImage: imageProvider,
+      backgroundImage: const AssetImage('assets/default_profile_picture.png'),
     );
   }
 }

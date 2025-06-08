@@ -7,6 +7,7 @@ class LmbTextField extends StatefulWidget {
   final bool isPassword;
   final bool useLabel;
   final bool isDisabled;
+  final double? height;
 
   const LmbTextField({
     super.key,
@@ -15,7 +16,8 @@ class LmbTextField extends StatefulWidget {
     this.inputType,
     this.isPassword = false,
     this.useLabel = false,
-    this.isDisabled = false
+    this.isDisabled = false,
+    this.height,
   });
 
   @override
@@ -28,30 +30,35 @@ class _LmbTextFieldState extends State<LmbTextField> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 8,
       children: [
-        if (widget.useLabel) Text(
-          widget.hint,
-          style: Theme.of(context).textTheme.labelMedium,
-        ),
+        if (widget.useLabel)
+          Text(
+            widget.hint,
+            style: Theme.of(context).textTheme.labelMedium,
+          ),
+        const SizedBox(height: 8),
 
-        TextField(
-          controller: widget.controller,
-          keyboardType: widget.inputType,
-          obscureText: widget.isPassword ? _obscureText : false,
-          enabled: !widget.isDisabled,
-          decoration: InputDecoration(
-            hintText: widget.useLabel ? null : widget.hint,
-            suffixIcon: widget.isPassword
-                ? IconButton(
-                    icon: Icon(
-                      _obscureText ? Icons.visibility_off : Icons.visibility,
-                    ),
-                    onPressed: () => setState(() => _obscureText = !_obscureText),
-                  )
-                : null,
+        SizedBox(
+          height: widget.height,
+          child: TextField(
+            controller: widget.controller,
+            keyboardType: widget.inputType,
+            obscureText: widget.isPassword ? _obscureText : false,
+            enabled: !widget.isDisabled,
+            decoration: InputDecoration(
+              hintText: widget.useLabel ? null : widget.hint,
+              suffixIcon: widget.isPassword
+                  ? IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () => setState(() => _obscureText = !_obscureText),
+                    )
+                  : null,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            ),
+            textAlignVertical: TextAlignVertical.center,
           ),
         ),
       ],

@@ -244,6 +244,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     );
                                   },
                                 ),
+                                // TODO: Remove this on publish
                                 MenuList(
                                   icon: Icons.settings_applications_rounded,
                                   title: "Fetch remote config",

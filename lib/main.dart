@@ -97,7 +97,6 @@ class _AcessRedirectorGateState extends State<AcessRedirectorGate> {
                   image: AssetImage("assets/app_icon.png"),
                   width: 80,
                   height: 80,
-                  alignment: AlignmentGeometry.center,
                   fit: BoxFit.cover,
                 ),
               ),

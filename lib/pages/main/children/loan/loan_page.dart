@@ -16,7 +16,6 @@ class LoanPage extends StatefulWidget {
 
 class _LoanPageState extends State<LoanPage> {
   late final LmbLoanInterestConfig loanConfig;
-
   final loanAmountController = TextEditingController();
   final reasonController = TextEditingController();
 
