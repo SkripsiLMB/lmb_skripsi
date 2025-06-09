@@ -31,7 +31,7 @@ class _DarkModeSettingsPageState extends State<DarkModeSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Lmbbase_element(
+    return LmbBaseElement(
       title: "Dark Mode",
       children: [
         RadioListTile<ThemeMode>(

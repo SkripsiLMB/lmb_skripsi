@@ -1,15 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/model/lmb_loan_interest.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
 
 class LmbLoan {
-  LmbUser loanMaker;
-  double loanAmount;
-  LmbLoanInterest loanInterestPeriod;
-  String bankAccountNumber;
-  String reason;
-  DateTime? createdAt;
+  final LmbUser loanMaker;
+  final double loanAmount;
+  final LmbLoanInterest loanInterestPeriod;
+  final String bankAccountNumber;
+  final String reason;
+  final DateTime? createdAt;
 
   LmbLoan({
     required this.loanMaker,

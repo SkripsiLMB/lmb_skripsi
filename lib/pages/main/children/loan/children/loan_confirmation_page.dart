@@ -44,7 +44,7 @@ class _LoanConfirmationPageState extends State<LoanConfirmationPage> {
   
   @override
   Widget build(BuildContext context) {
-    return Lmbbase_element(
+    return LmbBaseElement(
       title: "Loan Confirmation",
 
       bottomStickyCardItem: LmbPrimaryButton(

@@ -22,7 +22,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Lmbbase_element(
+    return LmbBaseElement(
       isScrollable: false,
       title: "Reset Password",
       children: [

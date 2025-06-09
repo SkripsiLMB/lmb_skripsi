@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:lmb_skripsi/components/card.dart';
-import 'package:lmb_skripsi/components/product_card.dart';
 import 'package:lmb_skripsi/components/profile_picture.dart';
 import 'package:lmb_skripsi/components/text_button.dart';
 import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
+import 'package:lmb_skripsi/helpers/logic/firestore_service.dart';
 import 'package:lmb_skripsi/helpers/logic/sbstorage_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
+import 'package:lmb_skripsi/helpers/logic/value_formatter.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
+import 'package:lmb_skripsi/model/lmb_product.dart';
 import 'package:lmb_skripsi/pages/main/children/home/children/product_page.dart';
 
 class Homepage extends StatefulWidget {
@@ -19,18 +21,27 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  bool showSHU = false;
+  bool showTotalSaving = false;
+  List<LmbProduct> productList = [];
 
   @override
   void initState() {
     super.initState();
-    loadSHUVisibility();
+    loadTotalSavingVisibility();
+    fetchProductList();
   }
 
-  Future<void> loadSHUVisibility() async {
-    final visible = await LmbLocalStorage.getValue<bool>("show_shu") ?? false;
+  Future<void> loadTotalSavingVisibility() async {
+    final visible = await LmbLocalStorage.getValue<bool>("show_total_saving") ?? false;
     setState(() {
-      showSHU = visible;
+      showTotalSaving = visible;
+    });
+  }
+
+  Future<void> fetchProductList() async {
+    final products = await FirestoreService.instance.getProductList(limit: 5);
+    setState(() {
+      productList = products;
     });
   }
 
@@ -193,19 +204,19 @@ class _HomepageState extends State<Homepage> {
                                               ),
                                             ),
                                             Text(
-                                              showSHU ? ": Rp0" : ": ••••••",
+                                              showTotalSaving ? ": Rp0" : ": ••••••",
                                               style: Theme.of(context).textTheme.labelMedium,
                                             ),
                                           ]
                                         ),
                                         IconButton(
                                           icon: Icon(
-                                            showSHU ? Icons.visibility : Icons.visibility_off,
+                                            showTotalSaving ? Icons.visibility : Icons.visibility_off,
                                             size: 20,
                                           ),
                                           onPressed: () async {
-                                            setState(() => showSHU = !showSHU);
-                                            await LmbLocalStorage.setValue<bool>("show_shu", showSHU);
+                                            setState(() => showTotalSaving = !showTotalSaving);
+                                            await LmbLocalStorage.setValue<bool>("show_total_saving", showTotalSaving);
                                           },
                                         ),
                                       ],
@@ -224,7 +235,7 @@ class _HomepageState extends State<Homepage> {
                           ),
                         ),
 
-                        // NOTE: Saving scrollable
+                        // NOTE: Savings scrollable
                         Padding(
                           padding: EdgeInsetsGeometry.fromLTRB(16, 0, 16, 8),
                           child: Row(
@@ -316,32 +327,53 @@ class _HomepageState extends State<Homepage> {
                               spacing: 8,
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                ProductCard(
-                                  name: "Chitato", 
-                                  price: 12000
-                                ),
-                                ProductCard(
-                                  name: "Chitato", 
-                                  price: 12000
-                                ),
-                                ProductCard(
-                                  name: "Chitato", 
-                                  price: 12000
-                                ),
-                                ProductCard(
-                                  name: "Chitato", 
-                                  price: 12000
-                                ),
-                                ProductCard(
-                                  name: "Chitato", 
-                                  price: 12000
-                                ),
-                                ProductCard(
-                                  name: "Chitato", 
-                                  price: 12000
-                                ),
-                              ],
+                              children: productList.map((product) {
+                                final thumbnailUrl = SbStorageService.instance.getPublicUrl("${product.id}.png", "product-thumbnail");
+                                return LmbCard(
+                                  usePadding: false,
+                                  child: Container(
+                                    width: 180,
+                                    padding: EdgeInsetsGeometry.all(16),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius: BorderRadiusGeometry.circular(4),
+                                          child: 
+                                          Image(
+                                            image: NetworkImage(thumbnailUrl!),
+                                            alignment: Alignment.center,
+                                            fit: BoxFit.contain,
+                                            width: 180,
+                                            height: 80,
+                                            errorBuilder: (context, error, stackTrace) {
+                                              return Image.asset(
+                                                'assets/broken_product.png',
+                                                alignment: Alignment.center,
+                                                fit: BoxFit.contain,
+                                                width: 180,
+                                                height: 80,
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        SizedBox(height: 4),
+                                        Text(
+                                          product.name,
+                                          style: Theme.of(context).textTheme.labelMedium,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                        Text(
+                                          ValueFormatter.formatPriceIDR(product.price),
+                                          style: Theme.of(context).textTheme.titleSmall,
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                );
+                              }).toList(),
                             ),
                           )
                         ),
@@ -378,30 +410,7 @@ class _HomepageState extends State<Homepage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                ProductCard(
-                                  name: "Chitato", 
-                                  price: 12000
-                                ),
-                                ProductCard(
-                                  name: "Chitato", 
-                                  price: 12000
-                                ),
-                                ProductCard(
-                                  name: "Chitato", 
-                                  price: 12000
-                                ),
-                                ProductCard(
-                                  name: "Chitato", 
-                                  price: 12000
-                                ),
-                                ProductCard(
-                                  name: "Chitato", 
-                                  price: 12000
-                                ),
-                                ProductCard(
-                                  name: "Chitato", 
-                                  price: 12000
-                                ),
+                                
                               ],
                             ),
                           )

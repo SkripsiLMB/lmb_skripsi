@@ -33,7 +33,7 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
   Widget build(BuildContext context) {
     final profilePictureUrl = SbStorageService.instance.getPublicUrl('${widget.nik}.jpg', "profile-pictures");
 
-    return Lmbbase_element(
+    return LmbBaseElement(
       isScrollable: true,
       title: "Change Profile Picture",
       children: [

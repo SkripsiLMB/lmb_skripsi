@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/model/lmb_loan.dart';
+import 'package:lmb_skripsi/model/lmb_product.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
 
 class FirestoreService {
@@ -79,15 +80,11 @@ class FirestoreService {
   }
 
   // NOTE: Ambil loan dari user
-  Future<List<LmbLoan>> getLoanList(String userNik, {int limit = 10, DocumentSnapshot? startAfterDoc}) async {
+  Future<List<LmbLoan>> getLoanList(String userNik, {int? limit = 10}) async {
     final userRef = _db.collection('users').doc(userNik);
-    Query query = userRef
-        .collection('loans')
-        .orderBy('created_at', descending: true)
-        .limit(limit);
-        
-    if (startAfterDoc != null) {
-      query = query.startAfterDocument(startAfterDoc);
+    Query query = userRef.collection('loans').orderBy('created_at', descending: true);
+    if (limit != null) {
+      query = query.limit(limit);
     }
 
     final querySnapshot = await query.get();
@@ -99,5 +96,21 @@ class FirestoreService {
     }).toList();
 
     return loans;
+  }
+
+  // NOTE: Ambil product
+  Future<List<LmbProduct>> getProductList({int? limit = 10}) async {
+    Query query = _db
+    .collection('products')
+    .orderBy('name');
+    if (limit != null) {
+      query = query.limit(limit);
+    }
+
+    final querySnapshot = await query.get();
+    return querySnapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return LmbProduct.fromJson(data..['id'] = doc.id);
+    }).toList();
   }
 }

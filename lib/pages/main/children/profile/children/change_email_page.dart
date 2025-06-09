@@ -34,7 +34,7 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Lmbbase_element(
+    return LmbBaseElement(
       isScrollable: true,
       title: "Change Email",
       children: [

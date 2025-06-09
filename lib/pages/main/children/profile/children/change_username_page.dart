@@ -32,7 +32,7 @@ class _ChangeUsernamePageState extends State<ChangeUsernamePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Lmbbase_element(
+    return LmbBaseElement(
       isScrollable: true,
       title: "Change Username",
       children: [

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 
-class Lmbbase_element extends StatelessWidget {
+class LmbBaseElement extends StatelessWidget {
   final List<Widget> children;
   final Widget? bottomStickyCardItem;
   final bool isScrollable;
@@ -11,7 +11,7 @@ class Lmbbase_element extends StatelessWidget {
   final bool showBackButton;
   final bool useLargeAppBar;
 
-  const Lmbbase_element({
+  const LmbBaseElement({
     super.key,
     required this.children,
     this.bottomStickyCardItem,

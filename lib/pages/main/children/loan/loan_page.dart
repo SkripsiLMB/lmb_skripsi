@@ -79,7 +79,7 @@ class _LoanPageState extends State<LoanPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Lmbbase_element(
+    return LmbBaseElement(
       title: "Loan",
       useLargeAppBar: true,
       showBackButton: false,

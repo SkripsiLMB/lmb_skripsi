@@ -23,7 +23,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  int _nikTapCount = 0;
+  int nikTapCount = 0;
   bool showDeveloperMenu = false;
 
   @override
@@ -83,8 +83,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              _nikTapCount++;
-                              if (_nikTapCount >= 8) {
+                              nikTapCount++;
+                              if (nikTapCount >= 8) {
+                                nikTapCount = 0;
                                 WindowProvider.showDialogBox(
                                   context: context, 
                                   title: "Developer Menu", 
