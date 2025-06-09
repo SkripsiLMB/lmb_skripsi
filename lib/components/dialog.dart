@@ -10,11 +10,13 @@ class LmbDialog extends StatelessWidget {
   final String? secondaryText;
   final VoidCallback? onSecondary;
   final Color color;
+  final Widget? content;
 
   const LmbDialog({
     super.key,
     required this.title,
     required this.description,
+    this.content,
     required this.primaryText,
     required this.onPrimary,
     this.secondaryText,
@@ -30,9 +32,21 @@ class LmbDialog extends StatelessWidget {
         title,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
-      content: Text(
-        description,
-        style: Theme.of(context).textTheme.bodyMedium,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        spacing: 8,
+        children: [
+          if (content != null) Center(
+            child: content!,
+          ),
+          Text(
+            description,
+            style: Theme.of(context).textTheme.bodyMedium,
+            textAlign: TextAlign.justify,
+          ),
+        ],
       ),
       actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       actionsAlignment: MainAxisAlignment.center,

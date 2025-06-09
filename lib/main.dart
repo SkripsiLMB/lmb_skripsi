@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
 import 'package:lmb_skripsi/helpers/logic/remote_config_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
@@ -110,28 +111,34 @@ class _AcessRedirectorGateState extends State<AcessRedirectorGate> {
         if ((snapshot.data ?? false) || snapshot.hasError) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             final title = snapshot.hasError ? "Config Malfunction" : "Application Disabled";
-            const description = "Please contact application developer for more informations.";
-            WindowProvider.showDialogBox(
-              context: context,
-              isBarrierDismissable: false,
-              title: title,
-              description: description,
-              primaryText: "Refresh",
-              onPrimary: () async {
+            const description = "This application has been temporarily disabled by the developer for internal reasons. Please contact the developer for further information or assistance.";            WindowProvider.showDialogBox(
+            context: context,
+            isBarrierDismissable: false,
+            title: title,
+            description: description,
+            content: GestureDetector(
+              onLongPress: () async {
                 await RemoteConfigService.instance.forceRefetch();
                 setState(() {
                   _loadAppDisabledStatus();
-                });     
+                });
               },
-              secondaryText: "Close Application",
-              onSecondary: () {
-                if (Platform.isAndroid) {
-                  SystemNavigator.pop();
-                } else if (Platform.isIOS) {
-                  exit(0);
-                }
-              },
-            );
+              child: SvgPicture.asset(
+                "assets/warning_illustration_icon.svg",
+                width: 120,
+                height: 120,
+                fit: BoxFit.contain,
+                alignment: Alignment.center,
+              ),
+            ),
+            primaryText: "Close Application",
+            onPrimary: () {
+              if (Platform.isAndroid) {
+                SystemNavigator.pop();
+              } else if (Platform.isIOS) {
+                exit(0);
+              }
+            });
           });
         }
 
@@ -197,7 +204,7 @@ class _RestartWidgetState extends State<RestartWidget> {
 
   void restartApp() {
     setState(() {
-      key = UniqueKey(); // Triggers full rebuild
+      key = UniqueKey();
     });
   }
 

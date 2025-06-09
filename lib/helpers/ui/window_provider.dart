@@ -35,6 +35,7 @@ class WindowProvider {
     required BuildContext context,
     required String title,
     required String description,
+    Widget? content,
     required String primaryText,
     required VoidCallback onPrimary,
     String? secondaryText,
@@ -49,6 +50,7 @@ class WindowProvider {
         return LmbDialog(
           title: title,
           description: description,
+          content: content,
           primaryText: primaryText,
           onPrimary: onPrimary,
           secondaryText: secondaryText,
