@@ -3,6 +3,7 @@ import 'package:lmb_skripsi/model/lmb_loan_interest.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
 
 class LmbLoan {
+  final String? id;
   final LmbUser loanMaker;
   final double loanAmount;
   final LmbLoanInterest loanInterestPeriod;
@@ -12,6 +13,7 @@ class LmbLoan {
   final DateTime? createdAt;
 
   LmbLoan({
+    this.id,
     required this.loanMaker,
     required this.loanAmount,
     required this.loanInterestPeriod,
@@ -32,7 +34,7 @@ class LmbLoan {
     };
   }
 
-  factory LmbLoan.fromJson(Map<String, dynamic> json, LmbUser? userData) {
+  factory LmbLoan.fromJson(Map<String, dynamic> json, LmbUser? userData, {String? id}) {
     final dynamic rawDate = json['created_at'];
 
     DateTime parsedDate;
@@ -45,6 +47,7 @@ class LmbLoan {
     }
 
     return LmbLoan(
+      id: id,
       loanMaker: userData ?? LmbUser(name: '-', nik: '-', email: '-', createdAt: DateTime.now()),
       loanAmount: (json['loan_amount'] as num).toDouble(),
       loanInterestPeriod: LmbLoanInterest.fromJson(json['loan_interest_period']),

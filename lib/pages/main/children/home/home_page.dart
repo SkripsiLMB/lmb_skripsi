@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
@@ -14,10 +16,16 @@ import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/model/lmb_loan.dart';
 import 'package:lmb_skripsi/model/lmb_product.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
-import 'package:lmb_skripsi/pages/main/children/home/children/product_page.dart';
+import 'package:lmb_skripsi/pages/main/children/home/children/loan_detail_page.dart';
+import 'package:lmb_skripsi/pages/main/children/home/children/product_list_page.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage({super.key});
+  static final GlobalKey<_HomepageState> homepageKey = GlobalKey<_HomepageState>();
+  Homepage({Key? key}) : super(key: homepageKey);
+
+  static void refresh() {
+    homepageKey.currentState?.refresh();
+  }
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -33,6 +41,10 @@ class _HomepageState extends State<Homepage> {
     super.initState();
     loadTotalSavingVisibility();
     fetchProductList();
+    fetchLoanList();
+  }
+
+  void refresh() {
     fetchLoanList();
   }
 
@@ -316,7 +328,7 @@ class _HomepageState extends State<Homepage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                'Product',
+                                'Products',
                                 style: Theme.of(context).textTheme.titleLarge,
                               ),
                               LmbTextButton(
@@ -396,24 +408,9 @@ class _HomepageState extends State<Homepage> {
                         // NOTE: Loan scrollable
                         Padding(
                           padding: EdgeInsetsGeometry.fromLTRB(16, 16, 16, 8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Loans',
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                              LmbTextButton(
-                                text: "More", 
-                                color: Theme.of(context).textTheme.bodyLarge?.color ?? LmbColors.brand,
-                                size: 18,
-                                suffixIcon: Icons.arrow_forward_ios_rounded,
-                                onTap: () {
-                                  
-                                }
-                              )
-                            ],
+                          child: Text(
+                            'Active Loans',
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ),
                         SingleChildScrollView(
@@ -430,82 +427,90 @@ class _HomepageState extends State<Homepage> {
                                     ? DateFormat('dd MMM yyyy').format(nextDueDate)
                                     : '-';
 
-                                return LmbCard(
-                                  isFullWidth: true,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Loan Amount",
-                                        style: Theme.of(context).textTheme.labelMedium,
-                                      ),
-                                      Text(
-                                        ValueFormatter.formatPriceIDR(loan.loanAmount),
-                                        style: Theme.of(context).textTheme.titleLarge,
-                                      ),
-                                      const SizedBox(height: 16),
-
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "Remaining",
-                                                style: Theme.of(context).textTheme.labelMedium,
-                                              ),
-                                              Text(
-                                                "${LoanCalculator.calculateRemainingMonths(loan)} month(s)",
-                                                style: Theme.of(context).textTheme.bodyLarge,
-                                              ),
-                                            ],
-                                          ),
-
-                                          Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "Next Due",
-                                                style: Theme.of(context).textTheme.labelMedium,
-                                              ),
-                                              Text(
-                                                formattedNextDueDate,
-                                                style: Theme.of(context).textTheme.bodyLarge,
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-
-                                      Padding(
-                                        padding: EdgeInsetsGeometry.symmetric(vertical: 4),
-                                        child: Divider(
-                                          color: Theme.of(context).textTheme.bodyMedium?.color ?? LmbColors.darkTextLow,
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => LoanDetailPage(model: loan)),
+                                    );
+                                  },
+                                  child: LmbCard(
+                                    isFullWidth: true,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Loan Amount",
+                                          style: Theme.of(context).textTheme.labelMedium,
                                         ),
-                                      ),
+                                        Text(
+                                          ValueFormatter.formatPriceIDR(loan.loanAmount),
+                                          style: Theme.of(context).textTheme.titleLarge,
+                                        ),
+                                        const SizedBox(height: 16),
 
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            "Monthly installment",
-                                            style: Theme.of(context).textTheme.labelMedium,
-                                          ),
-                                          Text(
-                                            ValueFormatter.formatPriceIDR(
-                                              LoanCalculator.calculateMonthlyInstallment(loan),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "Remaining",
+                                                  style: Theme.of(context).textTheme.labelMedium,
+                                                ),
+                                                Text(
+                                                  "${LoanCalculator.calculateRemainingMonths(loan)} month(s)",
+                                                  style: Theme.of(context).textTheme.bodyLarge,
+                                                ),
+                                              ],
                                             ),
-                                            style: Theme.of(context).textTheme.titleLarge,
+
+                                            Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "Next Due",
+                                                  style: Theme.of(context).textTheme.labelMedium,
+                                                ),
+                                                Text(
+                                                  formattedNextDueDate,
+                                                  style: Theme.of(context).textTheme.bodyLarge,
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+
+                                        Padding(
+                                          padding: EdgeInsetsGeometry.symmetric(vertical: 4),
+                                          child: Divider(
+                                            color: Theme.of(context).textTheme.bodyMedium?.color ?? LmbColors.darkTextLow,
                                           ),
-                                        ]
-                                      ),
-                                    ],
+                                        ),
+
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "Monthly Installment",
+                                              style: Theme.of(context).textTheme.labelMedium,
+                                            ),
+                                            Text(
+                                              ValueFormatter.formatPriceIDR(
+                                                LoanCalculator.calculateMonthlyInstallment(loan),
+                                              ),
+                                              style: Theme.of(context).textTheme.titleLarge,
+                                            ),
+                                          ]
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               }).toList(),

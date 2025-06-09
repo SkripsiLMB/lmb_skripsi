@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:lmb_skripsi/components/base_element.dart';
 import 'package:lmb_skripsi/components/button.dart';
 import 'package:lmb_skripsi/components/card.dart';
-import 'package:lmb_skripsi/components/checkbox.dart';
 import 'package:lmb_skripsi/components/info_detail.dart';
 import 'package:lmb_skripsi/helpers/logic/firestore_service.dart';
 import 'package:lmb_skripsi/helpers/logic/loan_calculator.dart';
@@ -12,23 +12,21 @@ import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/model/lmb_loan.dart';
 import 'package:lmb_skripsi/pages/main/children/home/home_page.dart';
 
-class LoanConfirmationPage extends StatefulWidget {
-  LmbLoan model;
-  
-  LoanConfirmationPage({
+class LoanDetailPage extends StatefulWidget {
+  final LmbLoan model;
+  const LoanDetailPage({
     super.key,
     required this.model
   });
 
   @override
-  State<LoanConfirmationPage> createState() => _LoanConfirmationPageState();
+  State<LoanDetailPage> createState() => _LoanDetailPageState();
 }
 
-class _LoanConfirmationPageState extends State<LoanConfirmationPage> {
+class _LoanDetailPageState extends State<LoanDetailPage> {
   late double totalInterest;
   late double totalLoan;
   late double monthlyInstallment;
-  bool confirmCorrectInformation = false;
   bool isLoading = false;
 
   @override
@@ -38,32 +36,74 @@ class _LoanConfirmationPageState extends State<LoanConfirmationPage> {
     totalLoan = LoanCalculator.calculateTotalLoan(widget.model);
     monthlyInstallment = LoanCalculator.calculateMonthlyInstallment(widget.model);
   }
-  
+
   @override
   Widget build(BuildContext context) {
+    final nextDueDate = LoanCalculator.calculateNextPaymentDueDate(widget.model);
+    final formattedNextDueDate = nextDueDate != null
+        ? DateFormat('dd MMM yyyy').format(nextDueDate)
+        : '-';
+
     return LmbBaseElement(
-      title: "Loan Confirmation",
+      title: "Loan Details",
 
-      bottomStickyCardItem: LmbPrimaryButton(
-        text: "Confirm Your Loan", 
-        isFullWidth: true,
-        isLoading: isLoading,
-        onPressed: () async {
-          if (!confirmCorrectInformation) {
-            WindowProvider.toastError(context, "Please check the statement box");
-            return;
-          }
-
-          setState(() => isLoading = true);
-          await FirestoreService.instance.addLoanToUser(widget.model);
-          setState(() => isLoading = false);
-          WindowProvider.toastSuccess(context, "Successfully applied for a loan.");
-          Homepage.refresh();
-          Navigator.of(context).pop();
-        }
+      bottomStickyCardItem: SizedBox(
+        height: 100,
+        child: Column(
+          spacing: 16,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "Total payment",
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+                Text(
+                  ValueFormatter.formatPriceIDR(monthlyInstallment),
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ]
+            ),
+            LmbPrimaryButton(
+              text: "Pay Now", 
+              isFullWidth: true,
+              isLoading: isLoading,
+              onPressed: () async {
+                setState(() => isLoading = true);
+                final status = await FirestoreService.instance.payLoanInstallment(widget.model);
+                setState(() => isLoading = false);
+                if (status == null) {
+                  WindowProvider.toastError(context, "Something went wrong");
+                } else {
+                  WindowProvider.toastSuccess(context, "Successfully paid ${status ? "this month installment" : "whole loan installments"}.");
+                  Homepage.refresh();
+                  Navigator.of(context).pop();
+                }
+              }
+            ),
+          ],
+        ),
       ),
 
       children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Next due date",
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+            Text(
+              formattedNextDueDate,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ]
+        ),
+        const SizedBox(height: 16),
+
         Text(
           "Please review your loan details carefully before proceeding. Any incorrect or incomplete information provided is solely your responsibility, and the company will not be held accountable for any consequences resulting from such errors.",
           textAlign: TextAlign.justify,  
@@ -167,13 +207,6 @@ class _LoanConfirmationPageState extends State<LoanConfirmationPage> {
               ),
             ],
           ),
-        ),
-        const SizedBox(height: 32),
-
-        LmbCheckbox.label(
-          value: confirmCorrectInformation, 
-          onChanged: (val) => setState(() => confirmCorrectInformation = val ?? false), 
-          label: "I hereby confirm that all the information provided above is true and correct."
         ),
       ],
     );

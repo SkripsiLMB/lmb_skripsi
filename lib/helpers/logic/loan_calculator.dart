@@ -32,15 +32,14 @@ class LoanCalculator {
   }
 
   static DateTime? calculateNextPaymentDueDate(LmbLoan model) {
-    if (model.createdAt == null) return null;
-    final nextMonth = model.paymentCounter + 1;
-    if (nextMonth > model.loanInterestPeriod.months) return null;
-    return DateTime(
-      model.createdAt?.year ?? 0,
-      model.createdAt?.month ?? 0 + nextMonth,
-     model. createdAt?.day ?? 0,
-    );
-  }
+  if (model.createdAt == null) return null;
+  final createdAt = model.createdAt!;
+  final nextMonth = model.paymentCounter + 1;
+  final year = createdAt.year + ((createdAt.month + nextMonth - 1) ~/ 12);
+  final month = (createdAt.month + nextMonth - 1) % 12 + 1;
+
+  return DateTime(year, month, createdAt.day);
+}
 
   static int calculateRemainingMonths(LmbLoan loan) {
     return loan.loanInterestPeriod.months - loan.paymentCounter;

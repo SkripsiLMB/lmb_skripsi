@@ -91,10 +91,35 @@ class FirestoreService {
     final querySnapshot = await query.get();
     final loans = querySnapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
-      return LmbLoan.fromJson(data, userData);
+      return LmbLoan.fromJson(data, userData, id: doc.id);
     }).toList();
 
     return loans;
+  }
+
+  // NOTE: Bayar cicilan trus hapus kalo lunas
+  Future<bool?> payLoanInstallment(LmbLoan loan) async {
+    final userRef = _db.collection('users').doc(loan.loanMaker.nik);
+    final loansCollection = userRef.collection('loans');
+    
+    if (loan.id == null) return null;
+    final docRef = loansCollection.doc(loan.id);
+    final docSnapshot = await docRef.get();
+
+    if (!docSnapshot.exists) {
+      return null;
+    }
+
+    final currentCounter = loan.paymentCounter;
+    final totalMonths = loan.loanInterestPeriod.months;
+
+    if (currentCounter + 1 >= totalMonths) {
+      await docRef.delete(); // Loan fully paid
+      return false;
+    } else {
+      await docRef.update({'payment_counter': currentCounter + 1});
+      return true;
+    }
   }
 
   // NOTE: Ambil product
