@@ -98,7 +98,7 @@ class _LoanDetailPageState extends State<LoanDetailPage> {
             ),
             Text(
               formattedNextDueDate,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.labelMedium,
             ),
           ]
         ),
@@ -200,6 +200,10 @@ class _LoanDetailPageState extends State<LoanDetailPage> {
               LmbInfoDetail(
                 title: "Total Loan",
                 value: ValueFormatter.formatPriceIDR(totalLoan),
+              ),
+              LmbInfoDetail(
+                title: "Total Payment Done",
+                value: ValueFormatter.formatPriceIDR(monthlyInstallment * widget.model.paymentCounter),
               ),
               LmbInfoDetail(
                 title: "Monthly Installment",
