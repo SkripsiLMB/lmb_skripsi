@@ -1,3 +1,5 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lmb_skripsi/components/base_element.dart';
@@ -29,6 +31,7 @@ class LoanPage extends StatefulWidget {
 
 class _LoanPageState extends State<LoanPage> {
   late final LmbLoanInterestConfig loanConfig;
+  late final LmbAmountConfig amountConfig;
   final loanAmountController = TextEditingController();
   final reasonController = TextEditingController();
   final bankAccountNumberController = TextEditingController();
@@ -41,22 +44,29 @@ class _LoanPageState extends State<LoanPage> {
   double monthlyInstallment = 0;
 
   bool isLoading = false;
+  bool isLoadingConfig = true;
 
   @override
   void initState() {
     super.initState();
-    _initializeLoanConfig();
+    initializeConfig();
   }
 
   // NOTE: Ambil ulang takutnya ada perubahan dalam waktu dekat
-  Future<void> _initializeLoanConfig() async {
-    final config = await RemoteConfigService.instance.get<LmbLoanInterestConfig>(
+  Future<void> initializeConfig() async {
+    final fetchedLoanConfig = await RemoteConfigService.instance.get<LmbLoanInterestConfig>(
       'loan_interest_config',
       (json) => LmbLoanInterestConfig.fromJson(json)
     );
+    final fetchedAmountConfig = await RemoteConfigService.instance.get<LmbAmountConfig>(
+      'amount_config',
+      (json) => LmbAmountConfig.fromJson(json),
+    );
     setState(() {
-      loanConfig = config;
+      loanConfig = fetchedLoanConfig;
       timePeriodList = loanConfig.timePeriods.map((e) => "${e.months} Month").toList();
+      amountConfig = fetchedAmountConfig;
+      isLoadingConfig = false;
     });
     loanAmountController.addListener(_updateCalculations);
   }
@@ -81,6 +91,10 @@ class _LoanPageState extends State<LoanPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoadingConfig) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return LmbBaseElement(
       title: "Loan",
       useLargeAppBar: true,
@@ -198,15 +212,11 @@ class _LoanPageState extends State<LoanPage> {
             }
 
             final loanAmount = loanAmountController.text.trim();
-            final config = await RemoteConfigService.instance.get<LmbAmountConfig>(
-              'amount_config',
-              (json) => LmbAmountConfig.fromJson(json),
-            );
             final loanAmountError = InputValidator.number(
               loanAmount,
               "Loan Amount",
-              minValue: config.minLoanAmount,
-              maxValue: config.maxLoanAmount,
+              minValue: amountConfig.minLoanAmount,
+              maxValue: amountConfig.maxLoanAmount,
             );
             if (loanAmountError != null) {
               WindowProvider.toastError(context, loanAmountError);

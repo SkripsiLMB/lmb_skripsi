@@ -13,10 +13,10 @@ class LmbAmountConfig {
 
   factory LmbAmountConfig.fromJson(Map<String, dynamic> json) {
     return LmbAmountConfig(
-      minLoanAmount: json['min_loan_amount'] ?? 100000,
-      maxLoanAmount: json['max_loan_amount'] ?? 10000000,
-      mandatorySavingAmount: json['mandatory_saving_amount'] ?? 650000,
-      principalSavingAmount: json['principal_saving_amount'] ?? 50000,
+      minLoanAmount: (json['min_loan_amount'] as num?)?.toDouble() ?? 100000,
+      maxLoanAmount: (json['max_loan_amount'] as num?)?.toDouble() ?? 10000000,
+      mandatorySavingAmount: (json['mandatory_saving_amount'] as num?)?.toDouble() ?? 650000,
+      principalSavingAmount: (json['principal_saving_amount'] as num?)?.toDouble() ?? 50000,
     );
   }
 }

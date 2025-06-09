@@ -60,11 +60,9 @@ class LmbCheckbox extends StatelessWidget {
 
         // NOTE: Cek pake element atau text
         element ??
-          Expanded(
-            child: Text(
-              label!,
-              softWrap: true,
-            ),
+          Text(
+            label!,
+            softWrap: true,
           ),
       ],
     );

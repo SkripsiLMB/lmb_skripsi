@@ -12,8 +12,8 @@ class RemoteConfigService {
   RemoteConfigService._();
   final List<String> _configKeys = [
     'loan_interest_config',
+    'amount_config',
     'is_app_disabled_config',
-    'amount_config'
   ];
 
   // NOTE: inisialisasi data awal
@@ -48,6 +48,7 @@ class RemoteConfigService {
   // NOTE: ambil config
   Future<T> get<T>(String key, T Function(dynamic json) fromJson) async {
     final value = _configCache[key];
+    print(">> Cached config for $key: $value (${value.runtimeType})");
     if (value != null) {
       try {
         return fromJson(value);

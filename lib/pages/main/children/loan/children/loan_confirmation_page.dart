@@ -170,10 +170,17 @@ class _LoanConfirmationPageState extends State<LoanConfirmationPage> {
         ),
         const SizedBox(height: 32),
 
-        LmbCheckbox.label(
+        LmbCheckbox.element(
           value: confirmCorrectInformation, 
           onChanged: (val) => setState(() => confirmCorrectInformation = val ?? false), 
-          label: "I hereby confirm that all the information provided above is true and correct."
+          element: Expanded(
+            child: Text(
+              "I hereby confirm that all the information provided above is true and correct.",
+              softWrap: true,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ),
       ],
     );
