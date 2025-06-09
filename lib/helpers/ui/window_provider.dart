@@ -7,21 +7,21 @@ import 'package:lmb_skripsi/helpers/ui/color.dart';
 class WindowProvider {
 
   static void toastSuccess(BuildContext context, String message) {
-    _showSnackbar(context, message, LmbColors.success);
+    showSnackbar(context, message, LmbColors.success);
   }
 
   static void toastError(BuildContext context, String message, [Object? error]) {
     if (kDebugMode) {
       print('[ERROR] $message | ${error ?? "NULL"}');
     }
-    _showSnackbar(context, message, LmbColors.error);
+    showSnackbar(context, message, LmbColors.error);
   }
 
   static void toastInfo(BuildContext context, String message) {
-    _showSnackbar(context, message, LmbColors.brand);
+    showSnackbar(context, message, LmbColors.brand);
   }
 
-  static void _showSnackbar(BuildContext context, String message, Color color) {
+  static void showSnackbar(BuildContext context, String message, Color color) {
     final snackBar = SnackBar(
       content: Text(message),
       backgroundColor: color,

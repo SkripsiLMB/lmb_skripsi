@@ -8,6 +8,8 @@ class LmbTextField extends StatefulWidget {
   final bool useLabel;
   final bool isDisabled;
   final double? height;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
 
   const LmbTextField({
     super.key,
@@ -18,6 +20,8 @@ class LmbTextField extends StatefulWidget {
     this.useLabel = false,
     this.isDisabled = false,
     this.height,
+    this.prefixIcon,
+    this.suffixIcon
   });
 
   @override
@@ -45,20 +49,34 @@ class _LmbTextFieldState extends State<LmbTextField> {
             controller: widget.controller,
             keyboardType: widget.inputType,
             obscureText: widget.isPassword ? _obscureText : false,
+            maxLines: widget.height != null ? null : 1,
+            expands: widget.height != null,
             enabled: !widget.isDisabled,
             decoration: InputDecoration(
               hintText: widget.useLabel ? null : widget.hint,
+              prefixIcon: widget.prefixIcon != null 
+              ? Container(
+                  padding: EdgeInsets.fromLTRB(12, 12, 0, 12),
+                  child: widget.prefixIcon,
+                ) 
+              : null,
               suffixIcon: widget.isPassword
-                  ? IconButton(
-                      icon: Icon(
-                        _obscureText ? Icons.visibility_off : Icons.visibility,
-                      ),
-                      onPressed: () => setState(() => _obscureText = !_obscureText),
-                    )
+                ? IconButton(
+                    icon: Icon(
+                      _obscureText ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: () => setState(() => _obscureText = !_obscureText),
+                  )
+                : widget.suffixIcon != null 
+                  ? Container(
+                      padding: EdgeInsets.fromLTRB(12, 12, 0, 12),
+                      child: widget.suffixIcon,
+                    ) 
                   : null,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              contentPadding: EdgeInsets.all(12),
             ),
-            textAlignVertical: TextAlignVertical.center,
+            textAlignVertical: TextAlignVertical.top,
+            textAlign: TextAlign.start,
           ),
         ),
       ],

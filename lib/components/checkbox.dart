@@ -3,18 +3,17 @@ import 'package:flutter/material.dart';
 class LmbCheckbox extends StatelessWidget {
   final bool value;
   final ValueChanged<bool?> onChanged;
-  final String? _label;
-  final Widget? _element;
+  final String? label;
+  final Widget? element;
 
   // NOTE: Constructor utama
   const LmbCheckbox._({
     super.key,
     required this.value,
     required this.onChanged,
-    String? label,
-    Widget? element,
-  })  : _label = label,
-        _element = element;
+    this.label,
+    this.element,
+  });
 
   // NOTE: Constructor untuk label bentuk teks
   const LmbCheckbox.label({
@@ -60,11 +59,13 @@ class LmbCheckbox extends StatelessWidget {
         const SizedBox(width: 8),
 
         // NOTE: Cek pake element atau text
-        _element ?? Text(
-          _label!,
-          softWrap: true,
-          overflow: TextOverflow.visible,
-        ),
+        element ??
+          Expanded(
+            child: Text(
+              label!,
+              softWrap: true,
+            ),
+          ),
       ],
     );
   }

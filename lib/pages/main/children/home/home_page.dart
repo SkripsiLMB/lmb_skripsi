@@ -101,6 +101,7 @@ class _HomepageState extends State<Homepage> {
                   color: Theme.of(context).colorScheme.background,
                   width: MediaQuery.of(context).size.width,
                   child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,7 +163,7 @@ class _HomepageState extends State<Homepage> {
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         SizedBox(
-                                            width: 120,
+                                            width: 140,
                                             child: Text(
                                             "NIK",
                                             style: Theme.of(context).textTheme.labelLarge,
@@ -175,7 +176,7 @@ class _HomepageState extends State<Homepage> {
                                       ],
                                     ),
 
-                                    // NOTE: Total SHU
+                                    // NOTE: Total Saving
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -185,9 +186,9 @@ class _HomepageState extends State<Homepage> {
                                           crossAxisAlignment: CrossAxisAlignment.center,
                                           children: [
                                             SizedBox(
-                                                width: 120,
+                                                width: 140,
                                                 child: Text(
-                                                "Total SHU",
+                                                "Total Savings",
                                                 style: Theme.of(context).textTheme.labelLarge,
                                               ),
                                             ),
@@ -344,6 +345,69 @@ class _HomepageState extends State<Homepage> {
                             ),
                           )
                         ),
+
+                        // NOTE: Loan scrollable
+                        Padding(
+                          padding: EdgeInsetsGeometry.fromLTRB(16, 16, 16, 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Loans',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              LmbTextButton(
+                                text: "More", 
+                                color: Theme.of(context).textTheme.bodyLarge?.color ?? LmbColors.brand,
+                                size: 18,
+                                suffixIcon: Icons.arrow_forward_ios_rounded,
+                                onTap: () {
+                                  
+                                }
+                              )
+                            ],
+                          ),
+                        ),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Padding(
+                            padding: EdgeInsetsGeometry.symmetric(horizontal: 16),
+                            child: Row(
+                              spacing: 8,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                ProductCard(
+                                  name: "Chitato", 
+                                  price: 12000
+                                ),
+                                ProductCard(
+                                  name: "Chitato", 
+                                  price: 12000
+                                ),
+                                ProductCard(
+                                  name: "Chitato", 
+                                  price: 12000
+                                ),
+                                ProductCard(
+                                  name: "Chitato", 
+                                  price: 12000
+                                ),
+                                ProductCard(
+                                  name: "Chitato", 
+                                  price: 12000
+                                ),
+                                ProductCard(
+                                  name: "Chitato", 
+                                  price: 12000
+                                ),
+                              ],
+                            ),
+                          )
+                        ),
+
+                        const SizedBox(height: 120)
                       ],
                     ),
                   ),

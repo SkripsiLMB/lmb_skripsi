@@ -31,9 +31,11 @@ void main() async {
   }
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeNotifier(),
-      child: const MyApp(),
+    RestartWidget(
+      child: ChangeNotifierProvider(
+        create: (_) => ThemeNotifier(),
+        child: const MyApp(),
+      ),
     ),
   );
 }
@@ -67,7 +69,7 @@ class AcessRedirectorGate extends StatefulWidget {
 }
 
 class _AcessRedirectorGateState extends State<AcessRedirectorGate> {
-  late Future<bool> _isAppDisabledFuture;
+  late Future<bool> isAppDisabledFuture;
 
   @override
   void initState() {
@@ -76,7 +78,7 @@ class _AcessRedirectorGateState extends State<AcessRedirectorGate> {
   }
 
   void _loadAppDisabledStatus() {
-    _isAppDisabledFuture = RemoteConfigService.instance.get<bool>(
+    isAppDisabledFuture = RemoteConfigService.instance.get<bool>(
       'is_app_disabled_config',
       (json) => json as bool
     );
@@ -85,7 +87,7 @@ class _AcessRedirectorGateState extends State<AcessRedirectorGate> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
-      future: _isAppDisabledFuture,
+      future: isAppDisabledFuture,
       builder: (context, snapshot) {
         // NOTE: Loading config
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -171,6 +173,39 @@ class _AcessRedirectorGateState extends State<AcessRedirectorGate> {
           },
         );
       },
+    );
+  }
+}
+
+// NOTE: Helper elemen untuk bantuin force hot restart
+class RestartWidget extends StatefulWidget {
+  final Widget child;
+
+  const RestartWidget({super.key, required this.child});
+
+  static void restartApp(BuildContext context) {
+    final state = context.findAncestorStateOfType<_RestartWidgetState>();
+    state?.restartApp();
+  }
+
+  @override
+  State<RestartWidget> createState() => _RestartWidgetState();
+}
+
+class _RestartWidgetState extends State<RestartWidget> {
+  Key key = UniqueKey();
+
+  void restartApp() {
+    setState(() {
+      key = UniqueKey(); // Triggers full rebuild
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return KeyedSubtree(
+      key: key,
+      child: widget.child,
     );
   }
 }

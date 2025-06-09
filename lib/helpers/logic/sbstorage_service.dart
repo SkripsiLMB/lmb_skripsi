@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -52,21 +53,29 @@ class SbStorageService {
     await _client.storage.from(bucket).remove([path]);
   }
 
-  // NOTE: compress
+  // NOTE: compress and crop
   Future<File> _compressImage(File file, int quality) async {
-    final dir = await getTemporaryDirectory();
-    final targetPath = p.join(dir.path, 'compressed_${DateTime.now().millisecondsSinceEpoch}.jpg');
+    final bytes = await file.readAsBytes();
+    final originalImage = img.decodeImage(bytes);
+    if (originalImage == null) throw Exception('Image decoding failed');
 
-    final result = await FlutterImageCompress.compressAndGetFile(
-      file.absolute.path,
-      targetPath,
-      quality: quality,
+    final int size = originalImage.width < originalImage.height
+        ? originalImage.width
+        : originalImage.height;
+    final int offsetX = (originalImage.width - size) ~/ 2;
+    final int offsetY = (originalImage.height - size) ~/ 2;
+    final squareImage = img.copyCrop(
+      originalImage,
+      x: offsetX,
+      y: offsetY,
+      width: size,
+      height: size,
     );
 
-    if (result == null) {
-      throw Exception('Image compression failed');
-    }
-
-    return File(result.path);
+    final jpeg = img.encodeJpg(squareImage, quality: quality);
+    final dir = await getTemporaryDirectory();
+    final targetPath = p.join(dir.path, 'compressed_${DateTime.now().millisecondsSinceEpoch}.jpg');
+    final compressedFile = File(targetPath)..writeAsBytesSync(jpeg);
+    return compressedFile;
   }
 }

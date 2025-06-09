@@ -26,6 +26,7 @@ final ThemeData lmbLightTheme = ThemeData(
     onSurface: LmbColors.textHigh,
     error: LmbColors.error,
     onError: Colors.white,
+    shadow: Color(0x1A000000)
   ),
   textTheme: const TextTheme(
     bodyLarge: TextStyle(color: LmbColors.textHigh),
@@ -35,6 +36,7 @@ final ThemeData lmbLightTheme = ThemeData(
     labelMedium: TextStyle(color: LmbColors.textMid, fontWeight: FontWeight.w600, fontSize: 18),
     labelLarge: TextStyle(color: LmbColors.textMid, fontWeight: FontWeight.bold, fontSize: 18),
     titleLarge: TextStyle(fontWeight: FontWeight.bold, color: LmbColors.textHigh),
+    titleSmall: TextStyle(fontWeight: FontWeight.w600, color: LmbColors.textLow),
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
@@ -96,6 +98,7 @@ final ThemeData lmbDarkTheme = ThemeData(
     onSurface: LmbColors.darkTextHigh,
     error: LmbColors.error,
     onError: Colors.white,
+    shadow: Color(0x1A9F9F9F)
   ),
   textTheme: const TextTheme(
     bodyLarge: TextStyle(color: LmbColors.darkTextHigh),
@@ -105,6 +108,7 @@ final ThemeData lmbDarkTheme = ThemeData(
     labelMedium: TextStyle(color: LmbColors.darkTextMid, fontWeight: FontWeight.w600, fontSize: 18),
     labelLarge: TextStyle(color: LmbColors.darkTextMid, fontWeight: FontWeight.bold, fontSize: 18),
     titleLarge: TextStyle(fontWeight: FontWeight.bold, color: LmbColors.darkTextHigh),
+    titleSmall: TextStyle(fontWeight: FontWeight.w600, color: LmbColors.darkTextLow),
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,

@@ -95,7 +95,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
         ? 'You need to wait $minutes:$seconds before sending another verification link.'
         : 'Please verify that $filteredEmail is your email to continue.';
 
-    return LmbBaseElement(
+    return Lmbbase_element(
       isScrollable: false,
       showAppbar: false,
       children: [

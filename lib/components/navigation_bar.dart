@@ -26,7 +26,7 @@ class LmbBottomNavBar extends StatelessWidget {
     'assets/user_filled_icon.svg',
   ];
 
-  static const List<String> _labels = [
+  static const List<String> labels = [
     "Home",
     "Savings",
     "Loan",
@@ -127,7 +127,7 @@ class LmbBottomNavBar extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          _labels[index],
+                          labels[index],
                           style: TextStyle(
                             color: isSelected
                                 ? LmbColors.brand

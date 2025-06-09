@@ -14,6 +14,13 @@ class LmbLoanInterest {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'months': months,
+      'annualInterestRate': annualInterestRate,
+    };
+  }
+
   @override
   String toString() => "$months Month";
 }

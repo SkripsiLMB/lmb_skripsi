@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lmb_skripsi/helpers/ui/color.dart';
 
-class LmbBaseElement extends StatelessWidget {
+class Lmbbase_element extends StatelessWidget {
   final List<Widget> children;
+  final Widget? bottomStickyCardItem;
   final bool isScrollable;
   final bool showAppbar;
   final bool useNavbarSafeArea;
@@ -9,9 +11,10 @@ class LmbBaseElement extends StatelessWidget {
   final bool showBackButton;
   final bool useLargeAppBar;
 
-  const LmbBaseElement({
+  const Lmbbase_element({
     super.key,
     required this.children,
+    this.bottomStickyCardItem,
     this.isScrollable = true,
     this.showAppbar = true,
     this.useNavbarSafeArea = false,
@@ -74,6 +77,24 @@ class LmbBaseElement extends StatelessWidget {
                 },
               ),
             ),
+
+        // NOTE: Ngecek harus pake bottom bar atau ngga
+        bottomNavigationBar: bottomStickyCardItem != null 
+          ?  Container(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.of(context).viewPadding.bottom),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).colorScheme.shadow,
+                    offset: Offset(0, -1),
+                    blurRadius: 3,
+                  ),
+                ],
+              ),
+              child: bottomStickyCardItem,
+            )
+          : null
       ),
     );
   }

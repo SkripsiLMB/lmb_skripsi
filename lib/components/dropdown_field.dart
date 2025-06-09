@@ -37,15 +37,14 @@ class LmbDropdownField extends StatelessWidget {
                   ))
               .toList(),
           onChanged: onChanged,
-          icon: null,
+          icon: const Icon(Icons.keyboard_arrow_down_rounded),
           decoration: InputDecoration(
             hintText: useLabel ? null : hint,
-            suffixIcon: const Icon(Icons.keyboard_arrow_down_rounded),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+            contentPadding: const EdgeInsets.all(12),
           ),
-            menuMaxHeight: 300,
-            borderRadius: BorderRadius.circular(12),
-        )
+          menuMaxHeight: 300,
+          borderRadius: BorderRadius.circular(12),
+        ),
       ],
     );
   }

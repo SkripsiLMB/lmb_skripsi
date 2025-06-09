@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   
   @override
   Widget build(BuildContext context) {
-    return LmbBaseElement(
+    return Lmbbase_element(
       isScrollable: false,
       showAppbar: false,
       children: [

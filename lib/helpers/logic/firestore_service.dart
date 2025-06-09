@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
+import 'package:lmb_skripsi/model/lmb_loan.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
 
 class FirestoreService {
@@ -67,5 +69,35 @@ class FirestoreService {
   // NOTE: update data user pake email
   Future<void> updateUserField(String nik, String field, dynamic value) async {
     await FirebaseFirestore.instance.collection('users').doc(nik).update({field: value});
+  }
+
+  // NOTE: nambah loan ke user
+  Future<void> addLoanToUser(LmbLoan model) async {
+    final userRef = _db.collection('users').doc(model.loanMaker.nik);
+    final loansCollection = userRef.collection('loans');
+    await loansCollection.add(model.toJson());
+  }
+
+  // NOTE: Ambil loan dari user
+  Future<List<LmbLoan>> getLoanList(String userNik, {int limit = 10, DocumentSnapshot? startAfterDoc}) async {
+    final userRef = _db.collection('users').doc(userNik);
+    Query query = userRef
+        .collection('loans')
+        .orderBy('created_at', descending: true)
+        .limit(limit);
+        
+    if (startAfterDoc != null) {
+      query = query.startAfterDocument(startAfterDoc);
+    }
+
+    final querySnapshot = await query.get();
+    final userData = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
+
+    final loans = querySnapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return LmbLoan.fromJson(data, userData);
+    }).toList();
+
+    return loans;
   }
 }

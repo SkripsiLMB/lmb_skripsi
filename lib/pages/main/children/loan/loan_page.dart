@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:lmb_skripsi/components/base_element.dart';
+import 'package:lmb_skripsi/components/button.dart';
 import 'package:lmb_skripsi/components/card.dart';
 import 'package:lmb_skripsi/components/dropdown_field.dart';
+import 'package:lmb_skripsi/components/info_detail.dart';
 import 'package:lmb_skripsi/components/text_field.dart';
+import 'package:lmb_skripsi/helpers/logic/input_validator.dart';
+import 'package:lmb_skripsi/helpers/logic/loan_calculator.dart';
 import 'package:lmb_skripsi/helpers/logic/remote_config_service.dart';
+import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/logic/value_formatter.dart';
+import 'package:lmb_skripsi/helpers/ui/color.dart';
+import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
+import 'package:lmb_skripsi/model/lmb_loan.dart';
 import 'package:lmb_skripsi/model/lmb_loan_interest.dart';
+import 'package:lmb_skripsi/model/lmb_user.dart';
+import 'package:lmb_skripsi/pages/main/children/loan/children/loan_confirmation_page.dart';
 
 class LoanPage extends StatefulWidget {
   const LoanPage({super.key});
@@ -18,6 +29,7 @@ class _LoanPageState extends State<LoanPage> {
   late final LmbLoanInterestConfig loanConfig;
   final loanAmountController = TextEditingController();
   final reasonController = TextEditingController();
+  final bankAccountNumberController = TextEditingController();
 
   List<String> timePeriodList = [];
   String? selectedTimePeriod;
@@ -25,6 +37,8 @@ class _LoanPageState extends State<LoanPage> {
   double totalInterest = 0;
   double totalLoan = 0;
   double monthlyInstallment = 0;
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -50,38 +64,42 @@ class _LoanPageState extends State<LoanPage> {
     if (loanAmountController.text.isEmpty || selectedInterest == null || selectedTimePeriod == null) return;
 
     final amount = double.tryParse(loanAmountController.text) ?? 0;
-    final months = int.parse(selectedTimePeriod!.split(' ').first);
-    final rate = selectedInterest! / 100;
+    final months = int.tryParse(selectedTimePeriod!.split(' ').first) ?? 0;
+
+    final interest = LoanCalculator.calculateInterest(amount, selectedInterest!, months);
+    final loan = LoanCalculator.calculateTotalLoan(amount, interest);
+    final installment = LoanCalculator.calculateMonthlyInstallment(loan, months);
 
     setState(() {
-      totalInterest = amount * rate * (months / 12);
-      totalLoan = amount + totalInterest;
-      monthlyInstallment = totalLoan / months;
+      totalInterest = interest;
+      totalLoan = loan;
+      monthlyInstallment = installment;
     });
-  }
+}
 
   @override
   Widget build(BuildContext context) {
-    return LmbBaseElement(
+    return Lmbbase_element(
       title: "Loan",
       useLargeAppBar: true,
       showBackButton: false,
       children: [
+        // NOTE: Form loan
         LmbTextField(
           hint: "Loan Amount",
           useLabel: true,
           controller: loanAmountController,
           inputType: TextInputType.number,
+          prefixIcon: SvgPicture.asset(
+            'assets/rupiah_icon.svg',
+            width: 24,
+            height: 24,
+            fit: BoxFit.contain,
+            color: Theme.of(context).textTheme.bodyMedium?.color,
+          ),
         ),
         const SizedBox(height: 16),
 
-        LmbTextField(
-          hint: "Reason",
-          useLabel: true,
-          controller: reasonController,
-          inputType: TextInputType.text,
-        ),
-        const SizedBox(height: 16),
 
         LmbDropdownField(
           hint: "Time Period",
@@ -100,49 +118,128 @@ class _LoanPageState extends State<LoanPage> {
             });
           },
         ),
-        const SizedBox(height: 64),
+        const SizedBox(height: 16),
 
         // NOTE: Bagian summary card
+        Text(
+            "Loan Summary",
+            style: Theme.of(context).textTheme.labelMedium,
+          ),
+        const SizedBox(height: 8),
         LmbCard(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text("Interest Percentage"),
-                  Text(ValueFormatter.formatPercent((selectedInterest ?? 0)/100))
-                ],
+              LmbInfoDetail(
+                title: "Interest Percentage",
+                value: ValueFormatter.formatPercent((selectedInterest ?? 0)/100),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text("Total Interest"),
-                  Text(ValueFormatter.formatPriceIDR(totalInterest))
-                ],
+              LmbInfoDetail(
+                title: "Total Interest",
+                value: ValueFormatter.formatPriceIDR(totalInterest),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text("Total loan"),
-                  Text(ValueFormatter.formatPriceIDR(totalLoan))
-                ],
+              LmbInfoDetail(
+                title: "Total Loan",
+                value: ValueFormatter.formatPriceIDR(totalLoan),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text("Monthly Installment"),
-                  Text(ValueFormatter.formatPriceIDR(monthlyInstallment))
-                ],
+              LmbInfoDetail(
+                title: "Monthly Installment",
+                value: ValueFormatter.formatPriceIDR(monthlyInstallment),
               ),
             ],
           ),
-        )
+        ),
+
+        Padding(
+          padding: EdgeInsetsGeometry.fromLTRB(0, 16, 0, 12),
+          child: Divider(
+            color: Theme.of(context).textTheme.bodyMedium?.color ?? LmbColors.darkTextLow,
+          ),
+        ),
+
+        // NOTE: Form Tambahan
+        LmbTextField(
+          hint: "BCA Account Number",
+          useLabel: true,
+          controller: bankAccountNumberController,
+          inputType: TextInputType.number,
+          suffixIcon: SvgPicture.asset(
+            'assets/bca_logo_icon.svg',
+            width: 48,
+            height: 24,
+            fit: BoxFit.contain,
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        LmbTextField(
+          hint: "Reason",
+          useLabel: true,
+          controller: reasonController,
+          inputType: TextInputType.text,
+          height: 120,
+        ),
+        const SizedBox(height: 32),
+
+        LmbPrimaryButton(
+          text: "Apply Loan", 
+          isLoading: isLoading,
+          isFullWidth: true,
+          onPressed: () async {
+            setState(() => isLoading = true);
+            final userData = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
+            setState(() => isLoading = false);
+            if (userData == null) {
+              WindowProvider.toastError(context, "Something went wrong");
+              return;
+            }
+
+            final loanAmount = loanAmountController.text.trim();
+            final loanAmountError = InputValidator.number(loanAmount, "Loan Amount", minValue: 100000, maxValue: 10000000);
+            if (loanAmountError != null) {
+              WindowProvider.toastError(context, loanAmountError);
+              return;
+            }
+
+            if (selectedTimePeriod == null) {
+              WindowProvider.toastError(context, "Please select a time period.");
+              return;
+            }
+
+            final bankAccountNumber = bankAccountNumberController.text.trim();
+            final bankAccountNumberError = InputValidator.number(bankAccountNumber, "BCA Account Number", minLen: 10, maxLen: 10);
+            if (bankAccountNumberError != null) {
+              WindowProvider.toastError(context, bankAccountNumberError);
+              return;
+            }
+
+            final reason = reasonController.text.trim();
+            final reasonError = InputValidator.empty(reason, "Reason", maxLen: 512);
+            if (reasonError != null) {
+              WindowProvider.toastError(context, reasonError);
+              return;
+            }
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LoanConfirmationPage(
+                  model: LmbLoan(
+                    loanMaker: userData, 
+                    loanAmount: double.tryParse(loanAmountController.text) ?? 0, 
+                    loanInterestPeriod: LmbLoanInterest(
+                      months: int.tryParse(selectedTimePeriod?.split(' ').first ?? '0') ?? 0, 
+                      annualInterestRate: selectedInterest ?? 0
+                    ), 
+                    bankAccountNumber: bankAccountNumber, 
+                    reason: reason
+                  ),
+                ),
+              ),
+            );
+          }
+        ),
       ],
     );
   }

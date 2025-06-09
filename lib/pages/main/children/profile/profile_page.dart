@@ -8,6 +8,7 @@ import 'package:lmb_skripsi/helpers/logic/sbstorage_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
+import 'package:lmb_skripsi/main.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
 import 'package:lmb_skripsi/pages/main/children/profile/children/change_email_page.dart';
 import 'package:lmb_skripsi/pages/main/children/profile/children/change_profile_picture_page.dart';
@@ -22,11 +23,24 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  int _nikTapCount = 0;
+  bool showDeveloperMenu = false;
+
   @override
   void initState() {
     super.initState();
+    _loadDeveloperMenu();
   }
 
+  void _loadDeveloperMenu() async {
+    final result = await LmbLocalStorage.getValue<bool>("show_developer_menu");
+    if (mounted) {
+      setState(() {
+        showDeveloperMenu = result ?? false;
+      });
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,12 +81,34 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
-                          Text(
-                            "NIK: ${snapshot.data?.nik ?? "-"}",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                              color: Colors.white
+                          GestureDetector(
+                            onTap: () {
+                              _nikTapCount++;
+                              if (_nikTapCount >= 8) {
+                                WindowProvider.showDialogBox(
+                                  context: context, 
+                                  title: "Developer Menu", 
+                                  description: "Do you want to ${showDeveloperMenu ? "disable" : "enable"} developer menu?", 
+                                  isBarrierDismissable: false,
+                                  primaryText: showDeveloperMenu ? "Disable" : "Enable", 
+                                  onPrimary: () async {
+                                     await LmbLocalStorage.setValue<bool>("show_developer_menu", !showDeveloperMenu);
+                                    setState(() {
+                                      showDeveloperMenu = !showDeveloperMenu;
+                                    });
+                                    WindowProvider.toastInfo(context, "Developer menu ${showDeveloperMenu ? "enabled" : "disabled"}");
+                                  },
+                                  secondaryText: "Cancel"
+                                );
+                              }
+                            },
+                            child: Text(
+                              "NIK: ${snapshot.data?.nik ?? "-"}",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ],
@@ -244,20 +280,50 @@ class _ProfilePageState extends State<ProfilePage> {
                                     );
                                   },
                                 ),
-                                // TODO: Remove this on publish
-                                MenuList(
-                                  icon: Icons.settings_applications_rounded,
-                                  title: "Fetch remote config",
-                                  description: "Refetch remote config",
-                                  onTap: () async {
-                                    await RemoteConfigService.instance.forceRefetch();
-                                    WindowProvider.toastInfo(context, "Successfuly fetch remote config.");
-                                  },
-                                ),
                               ],
                             ),
                           ),
                           SizedBox(height: 16),
+
+                          // NOTE: Developer menu
+                          if (showDeveloperMenu) ...[
+                            Text(
+                              "Developer",
+                              style: Theme.of(context).textTheme.labelSmall,
+                            ),
+                            LmbCard(
+                              isFullWidth: true,
+                              usePadding: false,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                spacing: 6,
+                                children: [
+                                  MenuList(
+                                    icon: Icons.restart_alt_rounded,
+                                    isFirstItem: true,
+                                    title: "Restart Application",
+                                    description: "Restart application without killing it",
+                                    onTap: () async {
+                                      RestartWidget.restartApp(context);
+                                      WindowProvider.toastSuccess(context, "Successfully restarted app widget.");
+                                    },
+                                  ),
+                                  MenuList(
+                                    icon: Icons.settings_applications_rounded,
+                                    title: "Fetch remote config",
+                                    description: "Refetch remote config from Firebase",
+                                    onTap: () async {
+                                      await RemoteConfigService.instance.forceRefetch();
+                                      WindowProvider.toastSuccess(context, "Successfully fetched remote config.");
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            
+                            const SizedBox(height: 120)
+                          ],
                         ],
                       ),
                     ),

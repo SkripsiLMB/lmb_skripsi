@@ -10,7 +10,7 @@ class LegalPage extends StatelessWidget {
     final dateTime = DateTime.now();
     final date = DateFormat('dd/MM/yyyy').format(dateTime);
 
-    return LmbBaseElement(
+    return Lmbbase_element(
       title: "Legality Agreement",
       children: [
         // NOTE: Terms of Service

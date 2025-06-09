@@ -32,7 +32,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return LmbBaseElement(
+    return Lmbbase_element(
       isScrollable: false,
       showAppbar: false,
       children: [
