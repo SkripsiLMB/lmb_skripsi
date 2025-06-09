@@ -80,16 +80,15 @@ class FirestoreService {
   }
 
   // NOTE: Ambil loan dari user
-  Future<List<LmbLoan>> getLoanList(String userNik, {int? limit = 10}) async {
-    final userRef = _db.collection('users').doc(userNik);
+  Future<List<LmbLoan>> getLoanList({int? limit}) async {
+    final userData = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
+    final userRef = _db.collection('users').doc(userData?.nik ?? "");
     Query query = userRef.collection('loans').orderBy('created_at', descending: true);
     if (limit != null) {
       query = query.limit(limit);
     }
 
     final querySnapshot = await query.get();
-    final userData = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
-
     final loans = querySnapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
       return LmbLoan.fromJson(data, userData);
@@ -99,7 +98,7 @@ class FirestoreService {
   }
 
   // NOTE: Ambil product
-  Future<List<LmbProduct>> getProductList({int? limit = 10}) async {
+  Future<List<LmbProduct>> getProductList({int? limit}) async {
     Query query = _db
     .collection('products')
     .orderBy('name');

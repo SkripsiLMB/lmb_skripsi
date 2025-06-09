@@ -33,13 +33,9 @@ class _LoanConfirmationPageState extends State<LoanConfirmationPage> {
   @override
   void initState() {
     super.initState();
-    final months = widget.model.loanInterestPeriod.months;
-    final rate = widget.model.loanInterestPeriod.annualInterestRate;
-    final amount = widget.model.loanAmount;
-
-    totalInterest = LoanCalculator.calculateInterest(amount, rate, months);
-    totalLoan = LoanCalculator.calculateTotalLoan(amount, totalInterest);
-    monthlyInstallment = LoanCalculator.calculateMonthlyInstallment(totalLoan, months);
+    totalInterest = LoanCalculator.calculateInterest(widget.model);
+    totalLoan = LoanCalculator.calculateTotalLoan(widget.model);
+    monthlyInstallment = LoanCalculator.calculateMonthlyInstallment(widget.model);
   }
   
   @override

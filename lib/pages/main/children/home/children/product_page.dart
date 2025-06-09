@@ -14,7 +14,7 @@ class ProductPage extends StatefulWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
-  final List<LmbProduct> products = [];
+  final List<LmbProduct> productList = [];
   bool isLoading = false;
 
   @override
@@ -25,11 +25,9 @@ class _ProductPageState extends State<ProductPage> {
 
   Future<void> fetchProductList() async {
     setState(() => isLoading = true);
-
     final result = await FirestoreService.instance.getProductList(limit: null);
-    products.clear();
-    products.addAll(result);
-
+    productList.clear();
+    productList.addAll(result);
     setState(() => isLoading = false);
   }
 
@@ -38,11 +36,12 @@ class _ProductPageState extends State<ProductPage> {
     return LmbBaseElement(
       title: "Products",
       children: [
-        ...products.map((product) {
+        ...productList.map((product) {
           final thumbnailUrl = SbStorageService.instance.getPublicUrl("${product.id}.png", "product-thumbnail");
           return Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: LmbCard(
+              isFullWidth: true,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -99,7 +98,7 @@ class _ProductPageState extends State<ProductPage> {
             child: Center(child: CircularProgressIndicator()),
           ),
 
-        if (!isLoading && products.isEmpty)
+        if (!isLoading && productList.isEmpty)
           const Padding(
             padding: EdgeInsets.all(16),
             child: Center(child: Text("No products found.")),

@@ -66,9 +66,9 @@ class _LoanPageState extends State<LoanPage> {
     final amount = double.tryParse(loanAmountController.text) ?? 0;
     final months = int.tryParse(selectedTimePeriod!.split(' ').first) ?? 0;
 
-    final interest = LoanCalculator.calculateInterest(amount, selectedInterest!, months);
-    final loan = LoanCalculator.calculateTotalLoan(amount, interest);
-    final installment = LoanCalculator.calculateMonthlyInstallment(loan, months);
+    final interest = LoanCalculator.calculateInterestLocal(amount, selectedInterest!, months);
+    final loan = LoanCalculator.calculateTotalLoanLocal(amount, interest);
+    final installment = LoanCalculator.calculateMonthlyInstallmentLocal(loan, months);
 
     setState(() {
       totalInterest = interest;
@@ -233,6 +233,7 @@ class _LoanPageState extends State<LoanPage> {
                       annualInterestRate: selectedInterest ?? 0
                     ), 
                     bankAccountNumber: bankAccountNumber, 
+                    paymentCounter: 0,
                     reason: reason
                   ),
                 ),
