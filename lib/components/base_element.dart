@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lmb_skripsi/helpers/ui/color.dart';
 
 class LmbBaseElement extends StatelessWidget {
   final List<Widget> children;
@@ -9,6 +8,7 @@ class LmbBaseElement extends StatelessWidget {
   final bool useNavbarSafeArea;
   final String? title;
   final bool showBackButton;
+  final bool usePadding;
   final bool useLargeAppBar;
 
   const LmbBaseElement({
@@ -20,6 +20,7 @@ class LmbBaseElement extends StatelessWidget {
     this.useNavbarSafeArea = false,
     this.title,
     this.showBackButton = true,
+    this.usePadding = true,
     this.useLargeAppBar = false
   });
 
@@ -27,9 +28,11 @@ class LmbBaseElement extends StatelessWidget {
   Widget build(BuildContext context) {
     // NOTE: Template tiap page
     final content = Padding(
-      padding: useNavbarSafeArea 
-                ? EdgeInsets.symmetric(horizontal: 16, vertical: 12)
-                : EdgeInsets.fromLTRB(16, 12, 16, 112),
+      padding: usePadding 
+      ? useNavbarSafeArea 
+        ? EdgeInsets.symmetric(horizontal: 16, vertical: 12)
+        : EdgeInsets.fromLTRB(16, 12, 16, 112)
+      : EdgeInsets.all(0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -13,8 +13,10 @@ import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/logic/value_formatter.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
+import 'package:lmb_skripsi/model/lmb_amount_config.dart';
 import 'package:lmb_skripsi/model/lmb_loan.dart';
 import 'package:lmb_skripsi/model/lmb_loan_interest.dart';
+import 'package:lmb_skripsi/model/lmb_loan_interest_config.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
 import 'package:lmb_skripsi/pages/main/children/loan/children/loan_confirmation_page.dart';
 
@@ -196,7 +198,16 @@ class _LoanPageState extends State<LoanPage> {
             }
 
             final loanAmount = loanAmountController.text.trim();
-            final loanAmountError = InputValidator.number(loanAmount, "Loan Amount", minValue: 100000, maxValue: 10000000);
+            final config = await RemoteConfigService.instance.get<LmbAmountConfig>(
+              'amount_config',
+              (json) => LmbAmountConfig.fromJson(json),
+            );
+            final loanAmountError = InputValidator.number(
+              loanAmount,
+              "Loan Amount",
+              minValue: config.minLoanAmount,
+              maxValue: config.maxLoanAmount,
+            );
             if (loanAmountError != null) {
               WindowProvider.toastError(context, loanAmountError);
               return;

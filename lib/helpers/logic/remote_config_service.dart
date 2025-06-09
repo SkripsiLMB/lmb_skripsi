@@ -12,7 +12,8 @@ class RemoteConfigService {
   RemoteConfigService._();
   final List<String> _configKeys = [
     'loan_interest_config',
-    'is_app_disabled_config'
+    'is_app_disabled_config',
+    'amount_config'
   ];
 
   // NOTE: inisialisasi data awal

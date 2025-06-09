@@ -121,6 +121,7 @@ class _AcessRedirectorGateState extends State<AcessRedirectorGate> {
                 await RemoteConfigService.instance.forceRefetch();
                 setState(() {
                   _loadAppDisabledStatus();
+                  Navigator.of(context).pop();
                 });
               },
               child: SvgPicture.asset(

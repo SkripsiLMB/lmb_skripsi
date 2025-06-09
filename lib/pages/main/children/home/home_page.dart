@@ -262,7 +262,7 @@ class _HomepageState extends State<Homepage> {
                           ),
                         ),
 
-                        // NOTE: Savings scrollable
+                        // NOTE: Saving scrollable
                         Padding(
                           padding: EdgeInsetsGeometry.fromLTRB(16, 0, 16, 8),
                           child: Row(

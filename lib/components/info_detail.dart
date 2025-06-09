@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 class LmbInfoDetail extends StatelessWidget {
   String title;
   String value;
+  TextStyle? titleStyle;
+  TextStyle? valueStyle;
 
   LmbInfoDetail({
     super.key,
     required this.title,
-    required this.value
+    this.titleStyle,
+    required this.value,
+    this.valueStyle
   });
 
   @override
@@ -18,9 +22,12 @@ class LmbInfoDetail extends StatelessWidget {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.titleSmall,
+          style: titleStyle ?? Theme.of(context).textTheme.titleSmall,
         ),
-        Text(value)
+        Text(
+          value,
+          style: valueStyle ?? Theme.of(context).textTheme.bodyMedium,
+        )
       ],
     );
   }

@@ -28,7 +28,7 @@ class LmbBottomNavBar extends StatelessWidget {
 
   static const List<String> labels = [
     "Home",
-    "Savings",
+    "Saving",
     "Loan",
     "Profile",
   ];
