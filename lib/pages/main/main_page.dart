@@ -17,6 +17,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
+  late final PageController _pageController;
 
   final List<Widget> _pages = [
     Homepage(),
@@ -25,30 +26,49 @@ class _MainPageState extends State<MainPage> {
     ProfilePage(),
   ];
 
-  void _onTabSelected(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(initialPage: _selectedIndex);
     _initializeUser();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   Future<void> _initializeUser() async {
     await AuthenticatorService.instance.initializeUserData(context);
   }
 
+  void _onTabSelected(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 650),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: _onPageChanged,
+        physics: const NeverScrollableScrollPhysics(),
         children: _pages,
       ),
-      resizeToAvoidBottomInset: true,
       extendBody: true,
       bottomNavigationBar: LmbBottomNavBar(
         currentIndex: _selectedIndex,

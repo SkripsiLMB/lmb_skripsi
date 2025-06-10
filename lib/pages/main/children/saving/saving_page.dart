@@ -120,7 +120,7 @@ class _SavingPageState extends State<SavingPage> {
         ),
 
         Padding(
-          padding: EdgeInsetsGeometry.symmetric(vertical: 4),
+          padding: EdgeInsetsGeometry.symmetric(vertical: 4, horizontal: 16),
           child: Divider(
             color: Theme.of(context).textTheme.bodyMedium?.color ?? LmbColors.darkTextLow,
           ),
