@@ -1,28 +1,24 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lmb_skripsi/helpers/logic/midtrans_service.dart';
+import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/logic/value_formatter.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
+import 'package:lmb_skripsi/model/lmb_user.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:lmb_skripsi/components/base_element.dart';
 
 class LmbPaymentQr extends StatefulWidget {
   final double amount;
   final VoidCallback? onPaymentSuccess;
   final VoidCallback? onPaymentFailed;
-  final String? customerName;
-  final String? customerEmail;
 
   const LmbPaymentQr({
     super.key,
     required this.amount,
     this.onPaymentSuccess,
-    this.onPaymentFailed,
-    this.customerName,
-    this.customerEmail,
+    this.onPaymentFailed
   });
 
   @override
@@ -56,10 +52,12 @@ class _LmbPaymentQrState extends State<LmbPaymentQr> {
         await MidTransService.initialize();
       }
 
+      final userData = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
       final result = await MidTransService.instance.createQrisPayment(
         amount: widget.amount,
-        customerName: widget.customerName ?? 'Customer',
-        customerEmail: widget.customerEmail ?? 'customer@example.com',
+        customerName: userData?.name ?? 'Customer',
+        customerEmail: userData?.email ?? 'customer@example.com',
+        expirySeconds: _remainingSeconds
       );
 
       if (result['success']) {

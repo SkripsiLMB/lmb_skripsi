@@ -53,6 +53,7 @@ class MidTransService {
     required double amount,
     required String customerName,
     required String customerEmail,
+    int expirySeconds = 60,
   }) async {
     if (!isInitialized) {
       throw Exception('MidTransService not initialized');
@@ -71,7 +72,12 @@ class MidTransService {
         'email': customerEmail,
       },
       'qris': {
-        'acquirer': 'gopay', // or 'airpay_shopee'
+        'acquirer': 'gopay',
+      },
+      'custom_expiry': {
+        'order_time': '${DateTime.now().toIso8601String().replaceAll('T', ' ').substring(0, 19)} +0700',
+        'expiry_duration': expirySeconds,
+        'unit': 'second',
       },
     };
 
@@ -88,6 +94,13 @@ class MidTransService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
+        if (kDebugMode) {
+          final qrCodeUrl = responseData['actions']?.firstWhere((action) => action['name'] == 'generate-qr-code')['url'];
+          print("\x1B[96m===================================SIMULATING MIDTRANS PAYMENT===================================");
+          print("Please head to https://simulator.sandbox.midtrans.com/v2/qris/ for QRIS scanning payment simulation.");
+          print("Input this URL: $qrCodeUrl");
+          print("==================================================================================================\x1B[0m");
+        }
         return {
           'success': true,
           'order_id': orderId,
@@ -111,15 +124,16 @@ class MidTransService {
     }
   }
 
+
   // NOTE: buat cek status
-  Future<Map<String, dynamic>> checkPaymentStatus(String orderId) async {
+  Future<Map<String, dynamic>> checkPaymentStatus(String transactionId) async {
     if (!isInitialized) {
       throw Exception('MidTransService not initialized');
     }
 
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/$orderId/status'),
+        Uri.parse('$baseUrl/$transactionId/status'),
         headers: {
           'Accept': 'application/json',
           'Authorization': 'Basic ${base64Encode(utf8.encode('$serverKey:'))}',

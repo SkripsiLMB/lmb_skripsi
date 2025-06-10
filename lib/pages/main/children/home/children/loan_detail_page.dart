@@ -78,7 +78,7 @@ class _LoanDetailPageState extends State<LoanDetailPage> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => LmbPaymentQr(
-                      amount: 50000.0, // Rp 50,000
+                      amount: monthlyInstallment,
                       onPaymentSuccess: () async {
                         final status = await FirestoreService.instance.payLoanInstallment(widget.model);
                         if (status == null) {
