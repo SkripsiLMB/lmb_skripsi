@@ -1419,6 +1419,15 @@ PODS:
   - Mantle (2.2.0):
     - Mantle/extobjc (= 2.2.0)
   - Mantle/extobjc (2.2.0)
+  - midtrans_sdk (1.0.0):
+    - Flutter
+    - MidtransKit (= 1.27.1)
+  - MidtransCoreKit (1.27.1)
+  - MidtransKit (1.27.1):
+    - MidtransCoreKit (= 1.27.1)
+    - MidtransKit/UI (= 1.27.1)
+  - MidtransKit/UI (1.27.1):
+    - MidtransCoreKit (= 1.27.1)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
@@ -1450,6 +1459,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_image_compress_common (from `.symlinks/plugins/flutter_image_compress_common/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - midtrans_sdk (from `.symlinks/plugins/midtrans_sdk/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
@@ -1479,6 +1489,8 @@ SPEC REPOS:
     - leveldb-library
     - libwebp
     - Mantle
+    - MidtransCoreKit
+    - MidtransKit
     - nanopb
     - PromisesObjC
     - RecaptchaInterop
@@ -1502,6 +1514,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_image_compress_common/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
+  midtrans_sdk:
+    :path: ".symlinks/plugins/midtrans_sdk/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   shared_preferences_foundation:
@@ -1541,6 +1555,9 @@ SPEC CHECKSUMS:
   leveldb-library: cc8b8f8e013647a295ad3f8cd2ddf49a6f19be19
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
+  midtrans_sdk: 4010b5074cd0e947ba88d41eee0450d6d8b1d243
+  MidtransCoreKit: 73fb47e4c9d386553d63fb96d1eda17366b89ab7
+  MidtransKit: 69ad9218be66e1298f12824611a03cebedf6a5b1
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47

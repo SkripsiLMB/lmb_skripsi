@@ -48,7 +48,6 @@ class RemoteConfigService {
   // NOTE: ambil config
   Future<T> get<T>(String key, T Function(dynamic json) fromJson) async {
     final value = _configCache[key];
-    print(">> Cached config for $key: $value (${value.runtimeType})");
     if (value != null) {
       try {
         return fromJson(value);

@@ -4,8 +4,10 @@ import 'package:lmb_skripsi/components/base_element.dart';
 import 'package:lmb_skripsi/components/button.dart';
 import 'package:lmb_skripsi/components/card.dart';
 import 'package:lmb_skripsi/components/info_detail.dart';
+import 'package:lmb_skripsi/components/payment_qr.dart';
 import 'package:lmb_skripsi/helpers/logic/firestore_service.dart';
 import 'package:lmb_skripsi/helpers/logic/loan_calculator.dart';
+import 'package:lmb_skripsi/helpers/logic/midtrans_service.dart';
 import 'package:lmb_skripsi/helpers/logic/value_formatter.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
@@ -72,15 +74,30 @@ class _LoanDetailPageState extends State<LoanDetailPage> {
               isLoading: isLoading,
               onPressed: () async {
                 setState(() => isLoading = true);
-                final status = await FirestoreService.instance.payLoanInstallment(widget.model);
-                setState(() => isLoading = false);
-                if (status == null) {
-                  WindowProvider.toastError(context, "Something went wrong");
-                } else {
-                  WindowProvider.toastSuccess(context, "Successfully paid ${status ? "this month installment" : "whole loan installments"}.");
-                  Homepage.refresh();
-                  Navigator.of(context).pop();
-                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LmbPaymentQr(
+                      amount: 50000.0, // Rp 50,000
+                      onPaymentSuccess: () async {
+                        final status = await FirestoreService.instance.payLoanInstallment(widget.model);
+                        if (status == null) {
+                          WindowProvider.toastError(context, "Successfully paid but isn't registered");
+                          
+                        } else {
+                          WindowProvider.toastSuccess(context, "Successfully paid ${status ? "this month installment" : "whole loan installments"}.");
+                          Homepage.refresh();
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      onPaymentFailed: () {
+                        WindowProvider.toastError(context, "Payment failed or timed out. Please try again.");
+                      },
+                    ),
+                  ),
+                ).then((result) {
+                  setState(() => isLoading = false);
+                });             
               }
             ),
           ],

@@ -4,6 +4,7 @@ import 'package:lmb_skripsi/components/button.dart';
 import 'package:lmb_skripsi/components/card.dart';
 import 'package:lmb_skripsi/enum/lmb_saving_type.dart';
 import 'package:lmb_skripsi/helpers/logic/value_formatter.dart';
+import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/pages/main/children/saving/children/deposit_page.dart';
 
 class SavingPage extends StatefulWidget {
@@ -115,6 +116,13 @@ class _SavingPageState extends State<SavingPage> {
                 MaterialPageRoute(builder: (context) => const DepositPage()),
               );
             },
+          ),
+        ),
+
+        Padding(
+          padding: EdgeInsetsGeometry.symmetric(vertical: 4),
+          child: Divider(
+            color: Theme.of(context).textTheme.bodyMedium?.color ?? LmbColors.darkTextLow,
           ),
         ),
       ],

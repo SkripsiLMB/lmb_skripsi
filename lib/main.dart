@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lmb_skripsi/helpers/logic/authenticator_service.dart';
+import 'package:lmb_skripsi/helpers/logic/midtrans_service.dart';
 import 'package:lmb_skripsi/helpers/logic/remote_config_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/logic/supabase_service.dart';
@@ -24,6 +25,7 @@ void main() async {
   await Firebase.initializeApp();
   await RemoteConfigService.instance.initialize();
   await SupabaseService.initializeApp();
+  await MidTransService.initialize();
 
   final isRemembered = await LmbLocalStorage.getValue<bool>("remember_me") ?? false;
   final isLoggedIn = FirebaseAuth.instance.currentUser != null;
