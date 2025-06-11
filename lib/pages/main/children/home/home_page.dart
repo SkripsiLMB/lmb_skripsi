@@ -102,7 +102,7 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
       mandatorySaving = fetchedMandatorySaving;
       principalSaving = fetchedPrincipalSaving;
       voluntarySaving = fetchedVoluntarySaving;
-      totalSaving = fetchedVoluntarySaving.totalAmount + fetchedPrincipalSaving.totalAmount + fetchedVoluntarySaving.totalAmount;
+      totalSaving = fetchedMandatorySaving.totalAmount + fetchedPrincipalSaving.totalAmount + fetchedVoluntarySaving.totalAmount;
     });
   }
 
@@ -337,60 +337,69 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 LmbCard(
-                                  child: Column(
-                                    spacing: 8,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Mandatory Savings",
-                                        style: Theme.of(context).textTheme.titleSmall,
-                                      ),
-                                      Text(
-                                        ValueFormatter.formatPriceIDR(mandatorySaving.totalAmount),
-                                        style: Theme.of(context).textTheme.labelMedium,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                      ),
-                                    ],
+                                  child: SizedBox(
+                                    width: 150,
+                                    child: Column(
+                                      spacing: 8,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Mandatory Savings",
+                                          style: Theme.of(context).textTheme.titleSmall,
+                                        ),
+                                        Text(
+                                          ValueFormatter.formatPriceIDR(mandatorySaving.totalAmount),
+                                          style: Theme.of(context).textTheme.labelMedium,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 LmbCard(
-                                  child: Column(
-                                    spacing: 8,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Principal Savings",
-                                        style: Theme.of(context).textTheme.titleSmall,
-                                      ),
-                                      Text(
-                                        ValueFormatter.formatPriceIDR(principalSaving.totalAmount),
-                                        style: Theme.of(context).textTheme.labelMedium,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                      ),
-                                    ],
+                                  child: SizedBox(
+                                    width: 150,
+                                    child: Column(
+                                      spacing: 8,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Principal Savings",
+                                          style: Theme.of(context).textTheme.titleSmall,
+                                        ),
+                                        Text(
+                                          ValueFormatter.formatPriceIDR(principalSaving.totalAmount),
+                                          style: Theme.of(context).textTheme.labelMedium,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 LmbCard(
-                                  child: Column(
-                                    spacing: 8,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Voluntary Savings",
-                                        style: Theme.of(context).textTheme.titleSmall,
-                                      ),
-                                      Text(
-                                        ValueFormatter.formatPriceIDR(voluntarySaving.totalAmount),
-                                        style: Theme.of(context).textTheme.labelMedium,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                      ),
-                                    ],
+                                  child: SizedBox(
+                                    width: 150,
+                                    child: Column(
+                                      spacing: 8,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Voluntary Savings",
+                                          style: Theme.of(context).textTheme.titleSmall,
+                                        ),
+                                        Text(
+                                          ValueFormatter.formatPriceIDR(voluntarySaving.totalAmount),
+                                          style: Theme.of(context).textTheme.labelMedium,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],

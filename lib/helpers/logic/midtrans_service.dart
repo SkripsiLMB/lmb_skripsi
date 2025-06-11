@@ -99,7 +99,7 @@ class MidTransService {
           print("\x1B[96m===================================SIMULATING MIDTRANS PAYMENT===================================");
           print("Please head to https://simulator.sandbox.midtrans.com/v2/qris/ for QRIS scanning payment simulation.");
           print("Input this URL: $qrCodeUrl");
-          print("==================================================================================================\x1B[0m");
+          print("=================================================================================================\x1B[0m");
         }
         return {
           'success': true,

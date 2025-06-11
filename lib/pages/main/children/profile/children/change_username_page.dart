@@ -61,7 +61,10 @@ class _ChangeUsernamePageState extends State<ChangeUsernamePage> {
               return;
             }
 
-            setState(() => isActionLoading = true);
+            setState(() {
+              FocusScope.of(context).unfocus();
+              isActionLoading = true;
+            });
             if (await AuthenticatorService.instance.handleChangeName(context, username)) {
               WindowProvider.toastSuccess(context, 'Username successfully updated');
               Navigator.pop(context);

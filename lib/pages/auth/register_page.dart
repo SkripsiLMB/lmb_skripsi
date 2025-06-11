@@ -162,7 +162,10 @@ class _RegisterPageState extends State<RegisterPage> {
               return;
             }
             
-            setState(() => isActionLoading = true);
+            setState(() {
+              FocusScope.of(context).unfocus();
+              isActionLoading = true;
+            });
             User? user = await AuthenticatorService.instance.handleRegister(context, name, nik, email, password);
             setState(() => isActionLoading = false);
             if (user != null) {

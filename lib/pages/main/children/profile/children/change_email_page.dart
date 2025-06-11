@@ -79,7 +79,10 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
               return;
             }
 
-            setState(() => isActionLoading = true);
+            setState(() {
+              FocusScope.of(context).unfocus();
+              isActionLoading = true;
+            });
             if (await AuthenticatorService.instance.handleChangeEmail(context, email, passwordController.text)) {
               WindowProvider.toastSuccess(context, 'Please check your email inbox');
               Navigator.pop(context);

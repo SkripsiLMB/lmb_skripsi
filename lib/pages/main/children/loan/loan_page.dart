@@ -203,7 +203,10 @@ class _LoanPageState extends State<LoanPage> {
           isLoading: isLoading,
           isFullWidth: true,
           onPressed: () async {
-            setState(() => isLoading = true);
+            setState(() {
+              FocusScope.of(context).unfocus();
+              isLoading = true;
+            });
             final userData = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
             setState(() => isLoading = false);
             if (userData == null) {

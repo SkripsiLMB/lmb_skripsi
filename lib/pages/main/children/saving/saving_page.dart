@@ -95,9 +95,9 @@ class _SavingPageState extends State<SavingPage> with AutomaticKeepAliveClientMi
       };
 
       final List<LmbSavingHistory> combinedHistory = [
-        ...(fetchedMandatorySaving.history).cast<LmbSavingHistory>(),
-        ...(fetchedPrincipalSaving.history).cast<LmbSavingHistory>(),
-        ...(fetchedVoluntarySaving.history).cast<LmbSavingHistory>(),
+        ...fetchedMandatorySaving.history.map((e) => e.copyWith(type: LmbSavingType.mandatory)),
+        ...fetchedPrincipalSaving.history.map((e) => e.copyWith(type: LmbSavingType.principal)),
+        ...fetchedVoluntarySaving.history.map((e) => e.copyWith(type: LmbSavingType.voluntary)),
       ];
       combinedHistory.sort((a, b) => b.date.compareTo(a.date));
 
@@ -124,6 +124,12 @@ class _SavingPageState extends State<SavingPage> with AutomaticKeepAliveClientMi
   Widget build(BuildContext context) {
     super.build(context);
 
+    if (isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return LmbBaseElement(
       title: "Saving",
       useLargeAppBar: true,
@@ -131,12 +137,7 @@ class _SavingPageState extends State<SavingPage> with AutomaticKeepAliveClientMi
       usePadding: false,
       isScrollable: false,
       children: [
-        if (isLoading) const Padding(
-          padding: EdgeInsets.only(top: 100),
-          child: Center(
-            child: CircularProgressIndicator(),
-          ),
-        ) else if (errorMessage != null) Padding(
+        if (errorMessage != null) Padding(
           padding: const EdgeInsets.only(top: 100),
           child: Center(
             child: Column(
@@ -266,7 +267,6 @@ class _SavingPageState extends State<SavingPage> with AutomaticKeepAliveClientMi
                     principalSaving: principalSaving,
                     voluntarySaving: voluntarySaving,
                     amountConfig: amountConfig,
-                    userCreatedDate: userCreatedDate,
                   )),
                 );
               },
@@ -291,13 +291,31 @@ class _SavingPageState extends State<SavingPage> with AutomaticKeepAliveClientMi
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 16,
                 children: allHistory.map((history) {
                   return LmbCard(
-                    isFullWidth: true,
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      title: Text(ValueFormatter.formatPriceIDR(history.amount)),
-                      subtitle: Text(DateFormat('dd MMMM yyyy').format(history.date)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "+${ValueFormatter.formatPriceIDR(history.amount)}",
+                          style: TextStyle(
+                            color: LmbColors.success,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600
+                          ),
+                        ),
+
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(history.type?.label ?? "Deposit"),
+                            Text(DateFormat('dd MMMM yyyy').format(history.date)),
+                          ],
+                        )
+                      ],
                     ),
                   );
                 }).toList(),

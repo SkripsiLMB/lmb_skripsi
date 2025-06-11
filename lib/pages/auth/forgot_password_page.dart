@@ -56,7 +56,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               return;
             }
 
-            setState(() => isActionLoading = true);
+            setState(() {
+              FocusScope.of(context).unfocus();
+              isActionLoading = true;
+            });
             if (await AuthenticatorService.instance.handleForgotPassword(context, email)) {
               WindowProvider.toastSuccess(context, 'Email sent to $email');
               Navigator.pop(context);

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lmb_skripsi/enum/lmb_saving_type.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/model/lmb_loan.dart';
@@ -178,5 +179,117 @@ class FirestoreService {
     combined.sort((a, b) => b.date.compareTo(a.date)); // Sort by latest first
 
     return combined;
+  }
+
+  // NOTE: bayar mandatory saving
+  Future<void> payMandatorySaving(String nik, double amount) async {
+    final userRef = _db.collection('users').doc(nik);
+    final savingRef = userRef.collection('savings').doc('mandatory');
+    
+    final now = DateTime.now();
+    final savingHistory = {
+      'amount': amount,
+      'date': Timestamp.fromDate(now),
+      'type': 'mandatory',
+    };
+
+    await _db.runTransaction((transaction) async {
+      final savingDoc = await transaction.get(savingRef);
+      final currentData = savingDoc.data() ?? {};
+      
+      final currentTotal = (currentData['total_amount'] as num?)?.toDouble() ?? 0.0;
+      final newTotal = currentTotal + amount;
+      
+      final currentHistory = (currentData['history'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+      currentHistory.add(savingHistory);
+      
+      transaction.set(savingRef, {
+        'total_amount': newTotal,
+        'history': currentHistory,
+        'is_paid': true,
+        'last_payment_date': Timestamp.fromDate(now),
+      });
+    });
+  }
+
+  // NOTE: bayar principal saving
+  Future<void> payPrincipalSaving(String nik, double amount, int monthsPaid) async {
+    final userRef = _db.collection('users').doc(nik);
+    final savingRef = userRef.collection('savings').doc('principal');
+    
+    final now = DateTime.now();
+    final savingHistory = {
+      'amount': amount,
+      'date': Timestamp.fromDate(now),
+      'type': 'principal',
+      'months_covered': monthsPaid,
+    };
+
+    await _db.runTransaction((transaction) async {
+      final savingDoc = await transaction.get(savingRef);
+      final currentData = savingDoc.data() ?? {};
+      
+      final currentTotal = (currentData['total_amount'] as num?)?.toDouble() ?? 0.0;
+      final newTotal = currentTotal + amount;
+      
+      final currentHistory = (currentData['history'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+      currentHistory.add(savingHistory);
+      
+      transaction.set(savingRef, {
+        'total_amount': newTotal,
+        'history': currentHistory,
+        'last_payment_date': Timestamp.fromDate(now),
+      });
+    });
+  }
+
+  // NOTE: bayar voluntary saving
+  Future<void> payVoluntarySaving(String nik, double amount) async {
+    final userRef = _db.collection('users').doc(nik);
+    final savingRef = userRef.collection('savings').doc('voluntary');
+    
+    final now = DateTime.now();
+    final savingHistory = {
+      'amount': amount,
+      'date': Timestamp.fromDate(now),
+      'type': 'voluntary',
+    };
+
+    await _db.runTransaction((transaction) async {
+      final savingDoc = await transaction.get(savingRef);
+      final currentData = savingDoc.data() ?? {};
+      
+      final currentTotal = (currentData['total_amount'] as num?)?.toDouble() ?? 0.0;
+      final newTotal = currentTotal + amount;
+      
+      final currentHistory = (currentData['history'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+      currentHistory.add(savingHistory);
+      
+      transaction.set(savingRef, {
+        'total_amount': newTotal,
+        'history': currentHistory,
+        'last_payment_date': Timestamp.fromDate(now),
+      });
+    });
+  }
+
+  // NOTE: bayar saving secara umum
+  Future<void> updateSavingPayment({
+    required LmbSavingType savingType,
+    required double amount,
+    required String userNik,
+    int? monthsPaid,
+  }) async {
+    switch (savingType) {
+      case LmbSavingType.mandatory:
+        await payMandatorySaving(userNik, amount);
+        break;
+      case LmbSavingType.principal:
+        await payPrincipalSaving(userNik, amount, monthsPaid ?? 1);
+        break;
+      case LmbSavingType.voluntary:
+        await payVoluntarySaving(userNik, amount);
+        break;
+    }
   }
 }

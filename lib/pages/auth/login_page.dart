@@ -97,7 +97,10 @@ class _LoginPageState extends State<LoginPage> {
                 return;
               }
 
-            setState(() => isActionLoading = true);
+            setState(() {
+              FocusScope.of(context).unfocus();
+              isActionLoading = true;
+            });
             User? user = await AuthenticatorService.instance.handleLogin(context, email, password);
             if (user != null) {
               await LmbLocalStorage.setValue<bool>("remember_me", rememberMe);

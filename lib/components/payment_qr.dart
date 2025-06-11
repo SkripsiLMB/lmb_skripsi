@@ -153,6 +153,9 @@ class _LmbPaymentQrState extends State<LmbPaymentQr> {
 
   @override
   Widget build(BuildContext context) {    
+    // NOTE: Loading
+    if (_isLoading) return Center(child: CircularProgressIndicator());
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -161,10 +164,7 @@ class _LmbPaymentQrState extends State<LmbPaymentQr> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // NOTE: Loading
-              if (_isLoading) Center(child: CircularProgressIndicator())
-              
-              else if (_qrString != null) ...[              
+              if (_qrString != null) ...[              
                 Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
