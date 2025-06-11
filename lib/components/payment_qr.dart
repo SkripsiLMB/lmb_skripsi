@@ -153,103 +153,105 @@ class _LmbPaymentQrState extends State<LmbPaymentQr> {
 
   @override
   Widget build(BuildContext context) {    
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsetsGeometry.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // NOTE: Loading
-            if (_isLoading) Center(child: CircularProgressIndicator())
-            
-            else if (_qrString != null) ...[              
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 8,
-                children: [
-                  SizedBox(height: 16),
-                  Text(
-                    'Scan QRIS to pay',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  Text(
-                    ValueFormatter.formatPriceIDR(widget.amount),
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: LmbColors.brand,
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-
-              Center(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-                    ),
-                  ),
-                  child: QrImageView(
-                    data: _qrString!,
-                    version: QrVersions.auto,
-                    size: MediaQuery.of(context).size.width - 64,
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                  ),
-                ),
-              ),
-
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  spacing: 32,
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsetsGeometry.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // NOTE: Loading
+              if (_isLoading) Center(child: CircularProgressIndicator())
+              
+              else if (_qrString != null) ...[              
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 8,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: _remainingSeconds <= 10 
-                            ? Theme.of(context).colorScheme.error.withOpacity(0.1)
-                            : Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
+                    SizedBox(height: 16),
+                    Text(
+                      'Scan QRIS to pay',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: Theme.of(context).textTheme.titleLarge?.color,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
                       ),
-                      child: Text(
-                        'Time remaining: ${_formatTime(_remainingSeconds)}',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: _remainingSeconds <= 10 
-                              ? Theme.of(context).colorScheme.error
-                              : Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    SizedBox(
-                      height: 100,
-                      child: Text(
-                        'Please complete your payment within the time limit. Transaction will be automatically cancelled if not completed in time.',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                    Text(
+                      ValueFormatter.formatPriceIDR(widget.amount),
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: LmbColors.brand,
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
+                ),
+
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                      ),
+                    ),
+                    child: QrImageView(
+                      data: _qrString!,
+                      version: QrVersions.auto,
+                      size: MediaQuery.of(context).size.width - 64,
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                    ),
+                  ),
+                ),
+
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    spacing: 32,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: _remainingSeconds <= 10 
+                              ? Theme.of(context).colorScheme.error.withOpacity(0.1)
+                              : Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          'Time remaining: ${_formatTime(_remainingSeconds)}',
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: _remainingSeconds <= 10 
+                                ? Theme.of(context).colorScheme.error
+                                : Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 100,
+                        child: Text(
+                          'Please complete your payment within the time limit. Transaction will be automatically cancelled if not completed in time.',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
+                    ],
+                  )
                 )
-              )
-            ],
-          ]
-        ),
+              ],
+            ]
+          ),
+        )
       )
     );
   }

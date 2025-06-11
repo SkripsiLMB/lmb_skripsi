@@ -34,6 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return LmbBaseElement(
       isScrollable: false,
+      isCentered: true,
       showAppbar: false,
       children: [
         // NOTE: Bagian header

@@ -22,9 +22,12 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClientMixin {
   int nikTapCount = 0;
   bool showDeveloperMenu = false;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -43,6 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
   
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: LmbColors.brand,

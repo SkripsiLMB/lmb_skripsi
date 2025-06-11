@@ -31,10 +31,13 @@ class Homepage extends StatefulWidget {
   State<Homepage> createState() => _HomepageState();
 }
 
-class _HomepageState extends State<Homepage> {
+class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin {
   bool showTotalSaving = false;
   List<LmbProduct> productList = [];
   List<LmbLoan> loanList = [];
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -74,6 +77,7 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: LmbColors.brand,

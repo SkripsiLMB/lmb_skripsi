@@ -97,6 +97,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
 
     return LmbBaseElement(
       isScrollable: false,
+      isCentered: true,
       showAppbar: false,
       children: [
         const Text(

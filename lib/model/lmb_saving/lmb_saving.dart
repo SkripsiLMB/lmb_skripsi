@@ -4,7 +4,7 @@ import 'package:lmb_skripsi/model/lmb_saving/lmb_principal_saving.dart';
 import 'package:lmb_skripsi/model/lmb_saving/lmb_voluntary_saving.dart';
 
 abstract class LmbSaving {
-  final int totalAmount;
+  final double totalAmount;
   final LmbSavingType type;
 
   LmbSaving(this.totalAmount, this.type);
@@ -14,11 +14,11 @@ abstract class LmbSaving {
     final type = LmbSavingType.fromString(json['type']);
     switch (type) {
       case LmbSavingType.mandatory:
-        return MandatorySaving.fromJson(json);
+        return LmbMandatorySaving.fromJson(json);
       case LmbSavingType.principal:
-        return PrincipalSaving.fromJson(json);
+        return LmbPrincipalSaving.fromJson(json);
       case LmbSavingType.voluntary:
-        return VoluntarySaving.fromJson(json);
+        return LmbVoluntarySaving.fromJson(json);
     }
   }
 }

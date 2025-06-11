@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class LmbColors {
   static const brand = Color(0xFF3461FD);
-  static const error = Color.fromARGB(255, 204, 47, 78);
-  static const success = Color.fromARGB(255, 81, 207, 55);
+  static const error = Color(0xFFCC2F4E);
+  static const success = Color(0xFF4BC033);
+  static const warning = Color(0xFFC9A330);
 
   // Light mode colors
   static const backgroundLow = Color(0xFFFFFFFF);

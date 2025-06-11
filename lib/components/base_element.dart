@@ -10,6 +10,7 @@ class LmbBaseElement extends StatelessWidget {
   final bool showBackButton;
   final bool usePadding;
   final bool useLargeAppBar;
+  final bool isCentered;
 
   const LmbBaseElement({
     super.key,
@@ -21,7 +22,8 @@ class LmbBaseElement extends StatelessWidget {
     this.title,
     this.showBackButton = true,
     this.usePadding = true,
-    this.useLargeAppBar = false
+    this.useLargeAppBar = false,
+    this.isCentered = false
   });
 
   @override
@@ -34,7 +36,7 @@ class LmbBaseElement extends StatelessWidget {
         : EdgeInsets.fromLTRB(16, 12, 16, 112)
       : EdgeInsets.all(0),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: isCentered ? MainAxisAlignment.center : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: children,
       ),

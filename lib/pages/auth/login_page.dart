@@ -30,6 +30,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return LmbBaseElement(
       isScrollable: false,
+      isCentered: true,
       showAppbar: false,
       children: [
         // NOTE: Bagian header

@@ -1,27 +1,37 @@
 import 'package:lmb_skripsi/enum/lmb_saving_type.dart';
 import 'package:lmb_skripsi/model/lmb_saving/lmb_saving.dart';
+import 'package:lmb_skripsi/model/lmb_saving/lmb_saving_history.dart';
 
-class MandatorySaving extends LmbSaving {
-  final bool isPaid;
+class LmbMandatorySaving extends LmbSaving {
+  final List<LmbSavingHistory> history;
 
-  MandatorySaving({
-    required int totalAmount,
-    required this.isPaid,
-  }) : super(totalAmount, LmbSavingType.mandatory);
+  LmbMandatorySaving({required double totalAmount, required this.history})
+      : super(totalAmount, LmbSavingType.mandatory);
 
-  factory MandatorySaving.fromJson(Map<String, dynamic> json) {
-    return MandatorySaving(
-      totalAmount: json['total_amount'] ?? 0,
-      isPaid: json['is_paid'] ?? false,
+  bool get isPaid => history.isNotEmpty;
+
+  bool isOverdue(DateTime userCreatedDate, int dueDateInDays) {
+    final now = DateTime.now();
+    final graceEnd = userCreatedDate.add(Duration(days: dueDateInDays));
+    final pastGrace = now.isAfter(graceEnd);
+
+    return !isPaid && pastGrace;
+  }
+
+  factory LmbMandatorySaving.fromJson(Map<String, dynamic> json) {
+    return LmbMandatorySaving(
+      totalAmount: (json['total_amount'] as num? ?? 0).toDouble(),
+      history: (json['history'] as List<dynamic>?)
+              ?.map((e) => LmbSavingHistory.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 
   @override
-  Map<String, dynamic> toJson() {
-    return {
-      'type': type.name,
-      'total_amount': totalAmount,
-      'is_paid': isPaid,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'type': type.name,
+        'total_amount': totalAmount,
+        'history': history.map((e) => e.toJson()).toList(),
+      };
 }

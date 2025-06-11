@@ -4,6 +4,10 @@ import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/model/lmb_loan.dart';
 import 'package:lmb_skripsi/model/lmb_product.dart';
+import 'package:lmb_skripsi/model/lmb_saving/lmb_mandatory_saving.dart';
+import 'package:lmb_skripsi/model/lmb_saving/lmb_principal_saving.dart';
+import 'package:lmb_skripsi/model/lmb_saving/lmb_saving_history.dart';
+import 'package:lmb_skripsi/model/lmb_saving/lmb_voluntary_saving.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
 
 class FirestoreService {
@@ -136,5 +140,43 @@ class FirestoreService {
       final data = doc.data() as Map<String, dynamic>;
       return LmbProduct.fromJson(data..['id'] = doc.id);
     }).toList();
+  }
+
+  // NOTE: Ambil Saving
+  Future<LmbMandatorySaving> getMandatorySaving(String nik) async {
+    final doc = await _db.collection('users').doc(nik).collection('savings').doc('mandatory').get();
+    return LmbMandatorySaving.fromJson(doc.data() ?? {});
+  }
+
+  Future<LmbPrincipalSaving> getPrincipalSaving(String nik) async {
+    final doc = await _db.collection('users').doc(nik).collection('savings').doc('principal').get();
+    return LmbPrincipalSaving.fromJson(doc.data() ?? {});
+  }
+
+  Future<LmbVoluntarySaving> getVoluntarySaving(String nik) async {
+    final doc = await _db.collection('users').doc(nik).collection('savings').doc('voluntary').get();
+    return LmbVoluntarySaving.fromJson(doc.data() ?? {});
+  }
+
+  Future<List<LmbSavingHistory>> getSavingHistory() async {
+    final user = await LmbLocalStorage.getValue<LmbUser>(
+      "user_data",
+      fromJson: (json) => LmbUser.fromJson(json),
+    );
+    final nik = user?.nik ?? "";
+
+    final mandatory = await FirestoreService.instance.getMandatorySaving(nik);
+    final principal = await FirestoreService.instance.getPrincipalSaving(nik);
+    final voluntary = await FirestoreService.instance.getVoluntarySaving(nik);
+
+    final combined = [
+      ...mandatory.history,
+      ...principal.history,
+      ...voluntary.history,
+    ];
+
+    combined.sort((a, b) => b.date.compareTo(a.date)); // Sort by latest first
+
+    return combined;
   }
 }

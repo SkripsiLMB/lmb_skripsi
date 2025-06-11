@@ -8,6 +8,7 @@ import 'package:lmb_skripsi/helpers/logic/firestore_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
+import 'package:rxdart/subjects.dart';
 
 class AuthenticatorService {
   // NOTE: Properti singleton
@@ -25,18 +26,18 @@ class AuthenticatorService {
   }
 
   // NOTE: Handle user data
-  LmbUser? _userData;
-  LmbUser? get userData => _userData;
-  final StreamController<LmbUser?> _userDataController = StreamController<LmbUser?>.broadcast();
-  Stream<LmbUser?> get userDataStream => _userDataController.stream;  
+  final BehaviorSubject<LmbUser?> _userDataSubject = BehaviorSubject<LmbUser?>();
+
+  Stream<LmbUser?> get userDataStream => _userDataSubject.stream;
+
+  LmbUser? get userData => _userDataSubject.valueOrNull;
 
   set userData(LmbUser? value) {
-    _userData = value;
-    _userDataController.add(value);
+    _userDataSubject.add(value);
   }
  
   void dispose() {
-    _userDataController.close();
+    _userDataSubject.close();
   }
 
   // NOTE: Update stream user data
@@ -219,6 +220,6 @@ class AuthenticatorService {
 
   // NOTE: Paksa stream reload
   void forceReloadUserDataStream() {
-    _userDataController.add(_userData);
+    _userDataSubject.add(_userDataSubject.valueOrNull);
   }
 }
