@@ -61,7 +61,7 @@ class LmbBottomNavBar extends StatelessWidget {
 
           // NOTE: Drop biru
           AnimatedPositioned(
-            duration: const Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 300),
             curve: Curves.easeOutQuad,
             top: 0,
             left: offset,
@@ -80,7 +80,7 @@ class LmbBottomNavBar extends StatelessWidget {
 
           // NOTE: Dot Indicator
           AnimatedPositioned(
-            duration: const Duration(milliseconds: 650),
+            duration: const Duration(milliseconds: 1000),
             curve: Curves.easeOutQuad,
             top: 0,
             left: offset,

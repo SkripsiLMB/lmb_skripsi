@@ -15,9 +15,13 @@ import 'package:lmb_skripsi/helpers/logic/value_formatter.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/model/lmb_loan.dart';
 import 'package:lmb_skripsi/model/lmb_product.dart';
+import 'package:lmb_skripsi/model/lmb_saving/lmb_mandatory_saving.dart';
+import 'package:lmb_skripsi/model/lmb_saving/lmb_principal_saving.dart';
+import 'package:lmb_skripsi/model/lmb_saving/lmb_voluntary_saving.dart';
 import 'package:lmb_skripsi/model/lmb_user.dart';
 import 'package:lmb_skripsi/pages/main/children/home/children/loan_detail_page.dart';
 import 'package:lmb_skripsi/pages/main/children/home/children/product_list_page.dart';
+import 'package:lmb_skripsi/pages/main/main_page.dart';
 
 class Homepage extends StatefulWidget {
   static final GlobalKey<_HomepageState> homepageKey = GlobalKey<_HomepageState>();
@@ -35,6 +39,11 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
   bool showTotalSaving = false;
   List<LmbProduct> productList = [];
   List<LmbLoan> loanList = [];
+  late LmbMandatorySaving mandatorySaving;
+  late LmbPrincipalSaving principalSaving;
+  late LmbVoluntarySaving voluntarySaving;
+  double totalSaving = 0;
+  bool isLoading = true;
 
   @override
   bool get wantKeepAlive => true;
@@ -42,13 +51,22 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
   @override
   void initState() {
     super.initState();
-    loadTotalSavingVisibility();
-    fetchProductList();
-    fetchLoanList();
+    fetchAllInitialData();
   }
 
   void refresh() {
     fetchLoanList();
+    fetchSaving();
+  }
+
+  Future<void> fetchAllInitialData() async {
+    await loadTotalSavingVisibility();
+    await fetchProductList();
+    await fetchLoanList();
+    await fetchSaving();
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Future<void> loadTotalSavingVisibility() async {
@@ -66,18 +84,38 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
   }
 
   Future<void> fetchLoanList() async {
-    final userData = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
-    if (userData == null) return;
-
     final loans = await FirestoreService.instance.getLoanList(limit: 5);
     setState(() {
       loanList = loans;
     });
   }
 
+  Future<void> fetchSaving() async {
+    final userData = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
+    if (userData == null) return;
+
+    final fetchedMandatorySaving = await FirestoreService.instance.getMandatorySaving(userData.nik);
+    final fetchedPrincipalSaving = await FirestoreService.instance.getPrincipalSaving(userData.nik);
+    final fetchedVoluntarySaving = await FirestoreService.instance.getVoluntarySaving(userData.nik);
+
+    setState(() {
+      mandatorySaving = fetchedMandatorySaving;
+      principalSaving = fetchedPrincipalSaving;
+      voluntarySaving = fetchedVoluntarySaving;
+      totalSaving = fetchedVoluntarySaving.totalAmount + fetchedPrincipalSaving.totalAmount + fetchedVoluntarySaving.totalAmount;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    if (isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: LmbColors.brand,
@@ -235,7 +273,7 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
                                               ),
                                             ),
                                             Text(
-                                              showTotalSaving ? ": Rp0" : ": ••••••",
+                                              showTotalSaving ? ": ${ValueFormatter.formatPriceIDR(totalSaving)}" : ": ••••••",
                                               style: Theme.of(context).textTheme.labelMedium,
                                             ),
                                           ]
@@ -268,7 +306,7 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
 
                         // NOTE: Saving scrollable
                         Padding(
-                          padding: EdgeInsetsGeometry.fromLTRB(16, 0, 16, 8),
+                          padding: EdgeInsetsGeometry.fromLTRB(16, 8, 16, 8),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -283,7 +321,7 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
                                 size: 18,
                                 suffixIcon: Icons.arrow_forward_ios_rounded,
                                 onTap: () {
-
+                                  MainPage.setTabIndex(1);
                                 }
                               )
                             ],
@@ -299,25 +337,61 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 LmbCard(
-                                  child: SizedBox(width: 100, height: 60),
+                                  child: Column(
+                                    spacing: 8,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Mandatory Savings",
+                                        style: Theme.of(context).textTheme.titleSmall,
+                                      ),
+                                      Text(
+                                        ValueFormatter.formatPriceIDR(mandatorySaving.totalAmount),
+                                        style: Theme.of(context).textTheme.labelMedium,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 LmbCard(
-                                  child: SizedBox(width: 100, height: 60),
+                                  child: Column(
+                                    spacing: 8,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Principal Savings",
+                                        style: Theme.of(context).textTheme.titleSmall,
+                                      ),
+                                      Text(
+                                        ValueFormatter.formatPriceIDR(principalSaving.totalAmount),
+                                        style: Theme.of(context).textTheme.labelMedium,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 LmbCard(
-                                  child: SizedBox(width: 100, height: 60),
-                                ),
-                                LmbCard(
-                                  child: SizedBox(width: 100, height: 60),
-                                ),
-                                LmbCard(
-                                  child: SizedBox(width: 100, height: 60),
-                                ),
-                                LmbCard(
-                                  child: SizedBox(width: 100, height: 60),
-                                ),
-                                LmbCard(
-                                  child: SizedBox(width: 100, height: 60),
+                                  child: Column(
+                                    spacing: 8,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Voluntary Savings",
+                                        style: Theme.of(context).textTheme.titleSmall,
+                                      ),
+                                      Text(
+                                        ValueFormatter.formatPriceIDR(voluntarySaving.totalAmount),
+                                        style: Theme.of(context).textTheme.labelMedium,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -326,7 +400,7 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
 
                         // NOTE: Product scrollable
                         Padding(
-                          padding: EdgeInsetsGeometry.fromLTRB(16, 16, 16, 8),
+                          padding: EdgeInsetsGeometry.fromLTRB(16, 24, 16, 8),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -411,7 +485,7 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
 
                         // NOTE: Loan scrollable
                         Padding(
-                          padding: EdgeInsetsGeometry.fromLTRB(16, 16, 16, 8),
+                          padding: EdgeInsetsGeometry.fromLTRB(16, 24, 16, 8),
                           child: Text(
                             'Active Loans',
                             style: Theme.of(context).textTheme.titleLarge,

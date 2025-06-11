@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lmb_skripsi/components/base_element.dart';
@@ -18,7 +20,12 @@ import 'package:lmb_skripsi/model/lmb_user.dart';
 import 'package:lmb_skripsi/pages/main/children/saving/children/deposit_page.dart';
 
 class SavingPage extends StatefulWidget {
-  const SavingPage({super.key});
+  static final GlobalKey<_SavingPageState> savingpageKey = GlobalKey<_SavingPageState>();
+  SavingPage({Key? key}) : super(key: savingpageKey);
+
+  static void refresh() {
+    savingpageKey.currentState?.loadSavingData();
+  }
 
   @override
   State<SavingPage> createState() => _SavingPageState();

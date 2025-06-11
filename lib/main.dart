@@ -177,7 +177,7 @@ class _AcessRedirectorGateState extends State<AcessRedirectorGate> {
                 }
 
                 // NOTE: Sudah verif dan login
-                return const MainPage();
+                return MainPage();
               },
             );
           },

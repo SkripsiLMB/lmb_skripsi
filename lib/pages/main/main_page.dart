@@ -9,7 +9,13 @@ import 'package:lmb_skripsi/pages/main/children/profile/profile_page.dart';
 import 'package:lmb_skripsi/pages/main/children/saving/saving_page.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  static final GlobalKey<_MainPageState> mainpageKey = GlobalKey<_MainPageState>();
+  MainPage({Key? key}) : super(key: mainpageKey);
+  
+
+  static void setTabIndex(int index) {
+    mainpageKey.currentState?._onTabSelected(index);
+  }
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -49,7 +55,7 @@ class _MainPageState extends State<MainPage> {
     });
     _pageController.animateToPage(
       index,
-      duration: const Duration(milliseconds: 650),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
   }
