@@ -68,6 +68,7 @@ class _LoanPageState extends State<LoanPage> {
       selectedBankName = null;
       bankAccountNumberController.clear();
       reasonController.clear();
+      FocusScope.of(context).unfocus();
     });
   }
 

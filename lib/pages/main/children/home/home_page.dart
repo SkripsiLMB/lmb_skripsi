@@ -503,7 +503,7 @@ class _HomepageState extends State<Homepage> with AutomaticKeepAliveClientMixin 
                         Padding(
                           padding: EdgeInsetsGeometry.symmetric(horizontal: 16),
                           child: Column(
-                            spacing: 8,
+                            spacing: 16,
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: loanList.map((loan) {
