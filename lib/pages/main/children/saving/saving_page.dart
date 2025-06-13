@@ -267,6 +267,7 @@ class _SavingPageState extends State<SavingPage> with AutomaticKeepAliveClientMi
                     principalSaving: principalSaving,
                     voluntarySaving: voluntarySaving,
                     amountConfig: amountConfig,
+                    selectedType: savings.entries.toList()[currentIndex].key,
                   )),
                 );
               },

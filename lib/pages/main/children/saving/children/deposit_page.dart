@@ -29,6 +29,7 @@ class DepositPage extends StatefulWidget {
   LmbPrincipalSaving principalSaving;
   LmbVoluntarySaving voluntarySaving;
   LmbAmountConfig amountConfig;
+  LmbSavingType selectedType;
 
   DepositPage({
     super.key,
@@ -36,6 +37,7 @@ class DepositPage extends StatefulWidget {
     required this.principalSaving,
     required this.voluntarySaving,
     required this.amountConfig,
+    required this.selectedType
   });
 
   @override
@@ -59,7 +61,7 @@ class _DepositPageState extends State<DepositPage> {
     super.initState();
     fetchInitialData();
     if (mounted) {
-      selectedSavingType = LmbSavingType.mandatory;
+      selectedSavingType = widget.selectedType;
     }
   }
 

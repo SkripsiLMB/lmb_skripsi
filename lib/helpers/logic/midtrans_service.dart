@@ -1,8 +1,12 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 
 class MidTransService {
   // NOTE: Singleton handler
@@ -94,12 +98,15 @@ class MidTransService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
-        if (kDebugMode) {
+        
+        final isDeveloperModeEnabled = await LmbLocalStorage.getValue<bool>("show_developer_menu");
+        if (kDebugMode || (isDeveloperModeEnabled ?? false)) {
           final qrCodeUrl = responseData['actions']?.firstWhere((action) => action['name'] == 'generate-qr-code')['url'];
           print("\x1B[96m===================================SIMULATING MIDTRANS PAYMENT===================================");
           print("Please head to https://simulator.sandbox.midtrans.com/v2/qris/ for QRIS scanning payment simulation.");
           print("Input this URL: $qrCodeUrl");
           print("=================================================================================================\x1B[0m");
+          Clipboard.setData(ClipboardData(text: qrCodeUrl));
         }
         return {
           'success': true,
