@@ -89,7 +89,7 @@ class _LoanConfirmationPageState extends State<LoanConfirmationPage> {
                 value: widget.model.loanMaker.nik,
               ),
               LmbInfoDetail(
-                title: "BCA Account Number",
+                title: "Bank Account Number",
                 value: widget.model.bankAccountNumber,
               ),
               Padding(

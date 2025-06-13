@@ -176,7 +176,7 @@ class _LoanPageState extends State<LoanPage> {
 
         // NOTE: Form Tambahan
         LmbTextField(
-          hint: "BCA Account Number",
+          hint: "Bank Account Number",
           useLabel: true,
           controller: bankAccountNumberController,
           inputType: TextInputType.number,
@@ -232,7 +232,7 @@ class _LoanPageState extends State<LoanPage> {
             }
 
             final bankAccountNumber = bankAccountNumberController.text.trim();
-            final bankAccountNumberError = InputValidator.number(bankAccountNumber, "BCA Account Number", minLen: 10, maxLen: 10);
+            final bankAccountNumberError = InputValidator.number(bankAccountNumber, "Bank Account Number", minLen: 10, maxLen: 10);
             if (bankAccountNumberError != null) {
               WindowProvider.toastError(context, bankAccountNumberError);
               return;
