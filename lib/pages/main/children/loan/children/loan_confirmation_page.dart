@@ -11,6 +11,7 @@ import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/model/lmb_loan.dart';
 import 'package:lmb_skripsi/pages/main/children/home/home_page.dart';
+import 'package:lmb_skripsi/pages/main/children/loan/loan_page.dart';
 
 class LoanConfirmationPage extends StatefulWidget {
   LmbLoan model;
@@ -59,6 +60,7 @@ class _LoanConfirmationPageState extends State<LoanConfirmationPage> {
           setState(() => isLoading = false);
           WindowProvider.toastSuccess(context, "Successfully applied for a loan.");
           Homepage.refresh();
+          LoanPage.resetField();
           Navigator.of(context).pop();
         }
       ),

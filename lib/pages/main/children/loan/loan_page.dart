@@ -24,7 +24,12 @@ import 'package:lmb_skripsi/model/lmb_user.dart';
 import 'package:lmb_skripsi/pages/main/children/loan/children/loan_confirmation_page.dart';
 
 class LoanPage extends StatefulWidget {
-  const LoanPage({super.key});
+  static final GlobalKey<_LoanPageState> loanpageKey = GlobalKey<_LoanPageState>();
+  LoanPage({Key? key}) : super(key: loanpageKey);
+
+  static void resetField() {
+    loanpageKey.currentState?.resetField();
+  }
 
   @override
   State<LoanPage> createState() => _LoanPageState();
@@ -54,6 +59,16 @@ class _LoanPageState extends State<LoanPage> {
   void initState() {
     super.initState();
     initializeConfig();
+  }
+
+  void resetField() {
+    setState(() {
+      loanAmountController.clear();
+      selectedTimePeriod = null;
+      selectedBankName = null;
+      bankAccountNumberController.clear();
+      reasonController.clear();
+    });
   }
 
   // NOTE: Ambil ulang takutnya ada perubahan dalam waktu dekat
