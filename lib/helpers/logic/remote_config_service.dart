@@ -14,6 +14,7 @@ class RemoteConfigService {
     'loan_interest_config',
     'amount_config',
     'is_app_disabled_config',
+    'bank_list_config'
   ];
 
   // NOTE: inisialisasi data awal

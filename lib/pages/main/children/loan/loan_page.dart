@@ -16,6 +16,7 @@ import 'package:lmb_skripsi/helpers/logic/value_formatter.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
 import 'package:lmb_skripsi/model/lmb_amount_config.dart';
+import 'package:lmb_skripsi/model/lmb_bank_list_config.dart';
 import 'package:lmb_skripsi/model/lmb_loan.dart';
 import 'package:lmb_skripsi/model/lmb_loan_interest.dart';
 import 'package:lmb_skripsi/model/lmb_loan_interest_config.dart';
@@ -36,9 +37,12 @@ class _LoanPageState extends State<LoanPage> {
   final reasonController = TextEditingController();
   final bankAccountNumberController = TextEditingController();
 
+
   List<String> timePeriodList = [];
   String? selectedTimePeriod;
   double? selectedInterest;
+  List<String> bankNameList = [];
+  String? selectedBankName;
   double totalInterest = 0;
   double totalLoan = 0;
   double monthlyInstallment = 0;
@@ -62,10 +66,15 @@ class _LoanPageState extends State<LoanPage> {
       'amount_config',
       (json) => LmbAmountConfig.fromJson(json),
     );
+    final fetchedBankListConfig = await RemoteConfigService.instance.get<LmbBankListConfig>(
+      'bank_list_config',
+      (json) => LmbBankListConfig.fromJson(json),
+    );
     setState(() {
       loanConfig = fetchedLoanConfig;
       timePeriodList = loanConfig.timePeriods.map((e) => "${e.months} Month").toList();
       amountConfig = fetchedAmountConfig;
+      bankNameList = fetchedBankListConfig.bankNameList;
       isLoadingConfig = false;
     });
     loanAmountController.addListener(_updateCalculations);
@@ -174,21 +183,35 @@ class _LoanPageState extends State<LoanPage> {
           ),
         ),
 
-        // NOTE: Form Tambahan
+        // NOTE: Form bank
+        LmbDropdownField(
+          hint: "Select Bank",
+          useLabel: true,
+          value: selectedBankName,
+          items: bankNameList,
+          onChanged: (value) {
+            setState(() {
+              selectedBankName = value;
+            });
+          },
+        ),
+        const SizedBox(height: 8),
+
         LmbTextField(
-          hint: "Bank Account Number",
+          hint: "Account Number",
           useLabel: true,
           controller: bankAccountNumberController,
-          inputType: TextInputType.number,
-          suffixIcon: SvgPicture.asset(
-            'assets/bca_logo_icon.svg',
-            width: 48,
-            height: 24,
-            fit: BoxFit.contain,
+          inputType: TextInputType.number
+        ),
+
+        Padding(
+          padding: EdgeInsetsGeometry.symmetric(vertical: 16),
+          child: Divider(
+            color: Theme.of(context).textTheme.bodyMedium?.color ?? LmbColors.darkTextLow,
           ),
         ),
-        const SizedBox(height: 16),
 
+        // NOTE: Form Tambahan
         LmbTextField(
           hint: "Reason",
           useLabel: true,
@@ -231,6 +254,11 @@ class _LoanPageState extends State<LoanPage> {
               return;
             }
 
+            if (selectedBankName == null) {
+              WindowProvider.toastError(context, "Please select a bank.");
+              return;
+            }
+
             final bankAccountNumber = bankAccountNumberController.text.trim();
             final bankAccountNumberError = InputValidator.number(bankAccountNumber, "Bank Account Number", minLen: 10, maxLen: 10);
             if (bankAccountNumberError != null) {
@@ -256,6 +284,7 @@ class _LoanPageState extends State<LoanPage> {
                       months: int.tryParse(selectedTimePeriod?.split(' ').first ?? '0') ?? 0, 
                       annualInterestRate: selectedInterest ?? 0
                     ), 
+                    bankName: selectedBankName ?? '',
                     bankAccountNumber: bankAccountNumber, 
                     paymentCounter: 0,
                     reason: reason

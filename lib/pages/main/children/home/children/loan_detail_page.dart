@@ -7,7 +7,6 @@ import 'package:lmb_skripsi/components/info_detail.dart';
 import 'package:lmb_skripsi/components/payment_qr.dart';
 import 'package:lmb_skripsi/helpers/logic/firestore_service.dart';
 import 'package:lmb_skripsi/helpers/logic/loan_calculator.dart';
-import 'package:lmb_skripsi/helpers/logic/midtrans_service.dart';
 import 'package:lmb_skripsi/helpers/logic/value_formatter.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
 import 'package:lmb_skripsi/helpers/ui/window_provider.dart';
@@ -144,6 +143,16 @@ class _LoanDetailPageState extends State<LoanDetailPage> {
               LmbInfoDetail(
                 title: "NIK",
                 value: widget.model.loanMaker.nik,
+              ),
+              Padding(
+                padding: EdgeInsetsGeometry.symmetric(vertical: 4),
+                child: Divider(
+                  color: Theme.of(context).textTheme.bodyMedium?.color ?? LmbColors.darkTextLow,
+                ),
+              ),
+              LmbInfoDetail(
+                title: "Bank Name",
+                value: widget.model.bankName,
               ),
               LmbInfoDetail(
                 title: "Bank Account Number",

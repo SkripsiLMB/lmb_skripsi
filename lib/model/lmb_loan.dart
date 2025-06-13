@@ -7,6 +7,7 @@ class LmbLoan {
   final LmbUser loanMaker;
   final double loanAmount;
   final LmbLoanInterest loanInterestPeriod;
+  final String bankName;
   final String bankAccountNumber;
   final String reason;
   final int paymentCounter;
@@ -17,6 +18,7 @@ class LmbLoan {
     required this.loanMaker,
     required this.loanAmount,
     required this.loanInterestPeriod,
+    required this.bankName,
     required this.bankAccountNumber,
     required this.paymentCounter,
     required this.reason,
@@ -27,6 +29,7 @@ class LmbLoan {
     return {
       'loan_amount': loanAmount,
       'loan_interest_period': loanInterestPeriod.toJson(),
+      'bank_name': bankName,
       'bank_account_number': bankAccountNumber,
       'payment_counter': paymentCounter,
       'reason': reason,
@@ -51,6 +54,7 @@ class LmbLoan {
       loanMaker: userData ?? LmbUser(name: '-', nik: '-', email: '-', createdAt: DateTime.now()),
       loanAmount: (json['loan_amount'] as num).toDouble(),
       loanInterestPeriod: LmbLoanInterest.fromJson(json['loan_interest_period']),
+      bankName: json['bank_name'] ?? '',
       bankAccountNumber: json['bank_account_number'] ?? '',
       paymentCounter: json['payment_counter'] ?? 0,
       reason: json['reason'] ?? '',

@@ -88,6 +88,16 @@ class _LoanConfirmationPageState extends State<LoanConfirmationPage> {
                 title: "NIK",
                 value: widget.model.loanMaker.nik,
               ),
+              Padding(
+                padding: EdgeInsetsGeometry.symmetric(vertical: 4),
+                child: Divider(
+                  color: Theme.of(context).textTheme.bodyMedium?.color ?? LmbColors.darkTextLow,
+                ),
+              ),
+              LmbInfoDetail(
+                title: "Bank Name",
+                value: widget.model.bankName,
+              ),
               LmbInfoDetail(
                 title: "Bank Account Number",
                 value: widget.model.bankAccountNumber,
