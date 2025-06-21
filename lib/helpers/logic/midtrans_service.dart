@@ -47,7 +47,7 @@ class MidTransService {
   }
 
   // NOTE: buat generate id random
-  String _generatePaymentId() {
+  String generatePaymentId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     return 'PAYMENT-$timestamp';
   }
@@ -63,7 +63,7 @@ class MidTransService {
       throw Exception('MidTransService not initialized');
     }
 
-    final orderId = _generatePaymentId();
+    final orderId = generatePaymentId();
     
     final requestBody = {
       'payment_type': 'qris',

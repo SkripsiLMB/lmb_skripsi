@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lmb_skripsi/helpers/logic/midtrans_service.dart';
+import 'package:lmb_skripsi/helpers/logic/remote_config_service.dart';
 import 'package:lmb_skripsi/helpers/logic/shared_preferences.dart';
 import 'package:lmb_skripsi/helpers/logic/value_formatter.dart';
 import 'package:lmb_skripsi/helpers/ui/color.dart';
@@ -36,7 +37,7 @@ class _LmbPaymentQrState extends State<LmbPaymentQr> {
   @override
   void initState() {
     super.initState();
-    _initializePayment();
+    initializePayment();
   }
 
   @override
@@ -46,7 +47,14 @@ class _LmbPaymentQrState extends State<LmbPaymentQr> {
     super.dispose();
   }
 
-  Future<void> _initializePayment() async {
+  Future<void> initializePayment() async {
+    if (await RemoteConfigService.instance.get<bool>(
+      'payment_bypass_config',
+      (json) => json as bool
+    )) {
+      bypassPayment();
+    }
+
     try {
       if (!MidTransService.instance.isInitialized) {
         await MidTransService.initialize();
@@ -66,8 +74,8 @@ class _LmbPaymentQrState extends State<LmbPaymentQr> {
           _qrString = result['qr_string'];
           _orderId = result['order_id'];
         });
-        _startTimer();
-        _startStatusChecking();
+        startTimer();
+        startStatusChecking();
       } else {
         widget.onPaymentFailed?.call();
         if (mounted) {
@@ -84,7 +92,7 @@ class _LmbPaymentQrState extends State<LmbPaymentQr> {
     }
   }
 
-  void _startTimer() {
+  void startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _remainingSeconds--;
@@ -93,12 +101,12 @@ class _LmbPaymentQrState extends State<LmbPaymentQr> {
       if (_remainingSeconds <= 0) {
         _timer?.cancel();
         _statusCheckTimer?.cancel();
-        _onTimeout();
+        onTimeout();
       }
     });
   }
 
-  void _startStatusChecking() {
+  void startStatusChecking() {
     if (_orderId == null) return;
 
     _statusCheckTimer = Timer.periodic(const Duration(seconds: 3), (timer) async {
@@ -111,39 +119,53 @@ class _LmbPaymentQrState extends State<LmbPaymentQr> {
           if (status == 'settlement' || status == 'capture') {
             _timer?.cancel();
             _statusCheckTimer?.cancel();
-            _onPaymentSuccess();
+            onPaymentSuccess();
           } else if (status == 'expire' || status == 'cancel' || status == 'failure') {
             _timer?.cancel();
             _statusCheckTimer?.cancel();
-            _onPaymentFailed();
+            onPaymentFailed();
           }
         }
       }
     });
   }
 
-  void _onPaymentSuccess() {
+  void bypassPayment() {
+    if (mounted) {
+      WindowProvider.showDialogBox(
+        context: context, 
+        title: 'Payment Bypass', 
+        description: 'The payment system is currently disabled and we allow users to freely add balance without using real money. You can choose wether to proceed payment or cancel it.', 
+        primaryText: 'Proceed', 
+        onPrimary: onPaymentSuccess,
+        secondaryText: 'Cancel', 
+        onSecondary: onPaymentFailed
+      );
+    }
+  }
+
+  void onPaymentSuccess() {
     if (mounted) {
       widget.onPaymentSuccess?.call();
       Navigator.of(context).pop();
     }
   }
 
-  void _onPaymentFailed() {
+  void onPaymentFailed() {
     if (mounted) {
       widget.onPaymentFailed?.call();
       Navigator.of(context).pop();
     }
   }
 
-  void _onTimeout() {
+  void onTimeout() {
     if (mounted) {
       widget.onPaymentFailed?.call();
       Navigator.of(context).pop();
     }
   }
 
-  String _formatTime(int seconds) {
+  String formatTime(int seconds) {
     final minutes = seconds ~/ 60;
     final remainingSeconds = seconds % 60;
     final formatter = NumberFormat('00');
@@ -227,7 +249,7 @@ class _LmbPaymentQrState extends State<LmbPaymentQr> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          'Time remaining: ${_formatTime(_remainingSeconds)}',
+                          'Time remaining: ${formatTime(_remainingSeconds)}',
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: _remainingSeconds <= 10 
                                 ? Theme.of(context).colorScheme.error

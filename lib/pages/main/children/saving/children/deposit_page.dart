@@ -146,7 +146,6 @@ class _DepositPageState extends State<DepositPage> {
           }
 
           setState(() {
-            FocusScope.of(context).unfocus();
             isActionLoading = true;
           });
           Navigator.push(
@@ -167,6 +166,7 @@ class _DepositPageState extends State<DepositPage> {
               ),
             ),
           ).then((result) {
+            FocusScope.of(context).unfocus();
             setState(() => isActionLoading = false);
           });
         }
