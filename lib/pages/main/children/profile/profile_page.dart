@@ -22,7 +22,8 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClientMixin {
+class _ProfilePageState extends State<ProfilePage>
+    with AutomaticKeepAliveClientMixin {
   int nikTapCount = 0;
   bool showDeveloperMenu = false;
 
@@ -43,7 +44,7 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
       });
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -58,19 +59,22 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
             Padding(
               padding: EdgeInsets.fromLTRB(16, 12, 16, 20),
               child: StreamBuilder(
-                stream: AuthenticatorService.instance.userDataStream, 
+                stream: AuthenticatorService.instance.userDataStream,
                 builder: (context, snapshot) {
                   final user = snapshot.data;
                   final profilePictureUrl = user != null
-                    ? SbStorageService.instance.getPublicUrl('${user.nik}.jpg', "profile-pictures")
-                    : null;
+                      ? SbStorageService.instance.getPublicUrl(
+                          '${user.nik}.jpg',
+                          "profile-pictures",
+                        )
+                      : null;
 
                   return Row(
                     spacing: 16,
                     children: [
                       LmbProfilePicture(
                         networkUrl: profilePictureUrl,
-                        radius: 35
+                        radius: 35,
                       ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -81,7 +85,7 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
-                              color: Colors.white
+                              color: Colors.white,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -91,19 +95,28 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                               if (nikTapCount >= 8) {
                                 nikTapCount = 0;
                                 WindowProvider.showDialogBox(
-                                  context: context, 
-                                  title: "Developer Menu", 
-                                  description: "Do you want to ${showDeveloperMenu ? "disable" : "enable"} developer menu?", 
+                                  context: context,
+                                  title: "Developer Menu",
+                                  description:
+                                      "Do you want to ${showDeveloperMenu ? "disable" : "enable"} developer menu?",
                                   isBarrierDismissable: false,
-                                  primaryText: showDeveloperMenu ? "Disable" : "Enable", 
+                                  primaryText: showDeveloperMenu
+                                      ? "Disable"
+                                      : "Enable",
                                   onPrimary: () async {
-                                     await LmbLocalStorage.setValue<bool>("show_developer_menu", !showDeveloperMenu);
+                                    await LmbLocalStorage.setValue<bool>(
+                                      "show_developer_menu",
+                                      !showDeveloperMenu,
+                                    );
                                     setState(() {
                                       showDeveloperMenu = !showDeveloperMenu;
                                     });
-                                    WindowProvider.toastInfo(context, "Developer menu ${showDeveloperMenu ? "enabled" : "disabled"}");
+                                    WindowProvider.toastInfo(
+                                      context,
+                                      "Developer menu ${showDeveloperMenu ? "enabled" : "disabled"}",
+                                    );
                                   },
-                                  secondaryText: "Cancel"
+                                  secondaryText: "Cancel",
                                 );
                               }
                             },
@@ -120,8 +133,8 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                       ),
                     ],
                   );
-                }
-              )
+                },
+              ),
             ),
 
             // NOTE: Body
@@ -129,15 +142,18 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
               child: ClipRRect(
                 borderRadius: BorderRadiusGeometry.only(
                   topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24)
+                  topRight: Radius.circular(24),
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: Container(
                   color: Theme.of(context).colorScheme.background,
                   width: MediaQuery.of(context).size.width,
                   child: SingleChildScrollView(
-                      child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 24,
+                      ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,19 +175,29 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                                 MenuList(
                                   icon: Icons.photo_rounded,
                                   title: "Change Profile Picture",
-                                  description: "Make changes to your profile picture",
+                                  description:
+                                      "Make changes to your profile picture",
                                   isFirstItem: true,
                                   onTap: () {
-                                    final userNik = AuthenticatorService.instance.userData?.nik;
+                                    final userNik = AuthenticatorService
+                                        .instance
+                                        .userData
+                                        ?.nik;
                                     if (userNik != null) {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => ChangeProfilePicturePage(nik: userNik),
+                                          builder: (context) =>
+                                              ChangeProfilePicturePage(
+                                                nik: userNik,
+                                              ),
                                         ),
                                       );
                                     } else {
-                                      WindowProvider.toastError(context, "Something went wrong.");
+                                      WindowProvider.toastError(
+                                        context,
+                                        "Something went wrong.",
+                                      );
                                     }
                                   },
                                 ),
@@ -180,16 +206,25 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                                   title: "Change Username",
                                   description: "Make changes to your username",
                                   onTap: () {
-                                    final userName = AuthenticatorService.instance.userData?.name;
+                                    final userName = AuthenticatorService
+                                        .instance
+                                        .userData
+                                        ?.name;
                                     if (userName != null) {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => ChangeUsernamePage(currentName: userName),
+                                          builder: (context) =>
+                                              ChangeUsernamePage(
+                                                currentName: userName,
+                                              ),
                                         ),
                                       );
                                     } else {
-                                      WindowProvider.toastError(context, "Something went wrong.");
+                                      WindowProvider.toastError(
+                                        context,
+                                        "Something went wrong.",
+                                      );
                                     }
                                   },
                                 ),
@@ -198,16 +233,24 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                                   title: "Change Profile Email",
                                   description: "Make changes to your email",
                                   onTap: () {
-                                    final userEmail = AuthenticatorService.instance.userData?.email;
+                                    final userEmail = AuthenticatorService
+                                        .instance
+                                        .userData
+                                        ?.email;
                                     if (userEmail != null) {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => ChangeEmailPage(currentEmail: userEmail),
+                                          builder: (context) => ChangeEmailPage(
+                                            currentEmail: userEmail,
+                                          ),
                                         ),
                                       );
                                     } else {
-                                      WindowProvider.toastError(context, "Something went wrong.");
+                                      WindowProvider.toastError(
+                                        context,
+                                        "Something went wrong.",
+                                      );
                                     }
                                   },
                                 ),
@@ -217,21 +260,40 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                                   description: "Make changes to your password",
                                   onTap: () {
                                     WindowProvider.showDialogBox(
-                                      context: context, 
-                                      title: "Change Password Confirmation", 
-                                      description: "Are you sure you want to change your password? We will send a password reset link to your current email.", 
-                                      primaryText: "Change Password", 
+                                      context: context,
+                                      title: "Change Password Confirmation",
+                                      description:
+                                          "Are you sure you want to change your password? We will send a password reset link to your current email.",
+                                      primaryText: "Change Password",
                                       onPrimary: () async {
-                                        final userData = await LmbLocalStorage.getValue<LmbUser>("user_data", fromJson: (json) => LmbUser.fromJson(json));
+                                        final userData =
+                                            await LmbLocalStorage.getValue<
+                                              LmbUser
+                                            >(
+                                              "user_data",
+                                              fromJson: (json) =>
+                                                  LmbUser.fromJson(json),
+                                            );
                                         final userEmail = userData?.email;
                                         if (userEmail != null) {
-                                          if (await AuthenticatorService.instance.handleForgotPassword(context, userEmail)) {
-                                            WindowProvider.toastSuccess(context, 'Check your email inbox');
+                                          if (await AuthenticatorService
+                                              .instance
+                                              .handleForgotPassword(
+                                                context,
+                                                userEmail,
+                                              )) {
+                                            WindowProvider.toastSuccess(
+                                              context,
+                                              'Check your email inbox',
+                                            );
                                           }
                                         } else {
-                                          WindowProvider.toastError(context, 'Something went wrong');
+                                          WindowProvider.toastError(
+                                            context,
+                                            'Something went wrong',
+                                          );
                                         }
-                                      }, 
+                                      },
                                       secondaryText: "Cancel",
                                     );
                                   },
@@ -243,18 +305,20 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                                   color: LmbColors.error,
                                   onTap: () {
                                     WindowProvider.showDialogBox(
-                                      context: context, 
-                                      title: "Sign Out Confirmation", 
-                                      description: "Are you sure you want to sign out from your account?", 
-                                      primaryText: "Sign out", 
-                                      onPrimary: () {
-                                        AuthenticatorService.instance.handleLogout();
-                                      }, 
+                                      context: context,
+                                      title: "Sign Out Confirmation",
+                                      description:
+                                          "Are you sure you want to sign out from your account?",
+                                      primaryText: "Sign out",
+                                      onPrimary: () async {
+                                        await AuthenticatorService.instance.handleLogout();
+                                        RestartWidget.restartApp(context);
+                                      },
                                       secondaryText: "Cancel",
-                                      customColor: LmbColors.error
+                                      customColor: LmbColors.error,
                                     );
                                   },
-                                )
+                                ),
                               ],
                             ),
                           ),
@@ -276,12 +340,16 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                                 MenuList(
                                   icon: Icons.dark_mode_rounded,
                                   title: "Dark Mode",
-                                  description: "Configure your application theme",
+                                  description:
+                                      "Configure your application theme",
                                   isFirstItem: true,
                                   onTap: () {
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => const DarkModeSettingsPage()),
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const DarkModeSettingsPage(),
+                                      ),
                                     );
                                   },
                                 ),
@@ -308,26 +376,35 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                                     icon: Icons.restart_alt_rounded,
                                     isFirstItem: true,
                                     title: "Restart Application",
-                                    description: "Restart application without killing it",
+                                    description:
+                                        "Restart application without killing it",
                                     onTap: () async {
                                       RestartWidget.restartApp(context);
-                                      WindowProvider.toastSuccess(context, "Successfully restarted app widget.");
+                                      WindowProvider.toastSuccess(
+                                        context,
+                                        "Successfully restarted app widget.",
+                                      );
                                     },
                                   ),
                                   MenuList(
                                     icon: Icons.settings_applications_rounded,
                                     title: "Fetch remote config",
-                                    description: "Refetch remote config from Firebase",
+                                    description:
+                                        "Refetch remote config from Firebase",
                                     onTap: () async {
-                                      await RemoteConfigService.instance.forceRefetch();
-                                      WindowProvider.toastSuccess(context, "Successfully fetched remote config.");
+                                      await RemoteConfigService.instance
+                                          .forceRefetch();
+                                      WindowProvider.toastSuccess(
+                                        context,
+                                        "Successfully fetched remote config.",
+                                      );
                                     },
                                   ),
                                 ],
                               ),
                             ),
-                            
-                            const SizedBox(height: 120)
+
+                            const SizedBox(height: 120),
                           ],
                         ],
                       ),

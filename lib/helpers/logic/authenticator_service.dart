@@ -127,6 +127,7 @@ class AuthenticatorService {
     await _auth.signOut();
     await LmbLocalStorage.clearAllValue();
     userData = null;
+    
   }
 
   // NOTE: untuk verif email

@@ -103,7 +103,7 @@ class MidTransService {
         if (kDebugMode || (isDeveloperModeEnabled ?? false)) {
           final qrCodeUrl = responseData['actions']?.firstWhere((action) => action['name'] == 'generate-qr-code')['url'];
           print("\x1B[96m===================================SIMULATING MIDTRANS PAYMENT===================================");
-          print("Please head to https://simulator.sandbox.midtrans.com/v2/qris/ for QRIS scanning payment simulation.");
+          print("Please head to https://simulator.sandbox.midtrans.com/v2/qris/index for QRIS scanning payment simulation.");
           print("Input this URL: $qrCodeUrl");
           print("=================================================================================================\x1B[0m");
           Clipboard.setData(ClipboardData(text: qrCodeUrl));
